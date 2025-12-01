@@ -1,0 +1,52 @@
+﻿@model TeklifYonetimSistemi.Models.CustomerModel
+
+@{
+    ViewData["Title"] = "Müşteri Detayları";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-info-circle"></i> Müşteri Detayları</h3>
+            <span class="badge bg-light text-dark">ID: @Model.Id</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6 border-end">
+                    <h5 class="text-primary mb-3">Firma Bilgileri</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4">Firma Adı:</dt>
+                        <dd class="col-sm-8 fw-bold">@Model.FirmaUnvani</dd>
+
+                        <dt class="col-sm-4">Adres:</dt>
+                        <dd class="col-sm-8">@Model.Adres</dd>
+
+                        <dt class="col-sm-4">Firma Açıklaması:</dt>
+                        <dd class="col-sm-8">@Model.FirmaDetay</dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6 ps-md-4">
+                    <h5 class="text-primary mb-3">Müşteri İletişim</h5>
+                    <dl class="row">
+                        @**@
+                        <dt class="col-sm-4">Ad Soyad:</dt>
+                        <dd class="col-sm-8"></dd>
+
+                        <dt class="col-sm-4">Telefon:</dt>
+                        <dd class="col-sm-8"><a href="tel:@Model.Telefon">@Model.Telefon</a></dd>
+
+                        <dt class="col-sm-4">E-Posta:</dt>
+                        <dd class="col-sm-8"><a href="mailto:@Model.Email">@Model.Email</a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2 p-3">
+            <a asp-action="ana" class="btn btn-secondary">Listeye Dön</a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-white">
+                <i class="bi bi-pencil"></i> Düzenle
+            </a>
+        </div>
+    </div>
+</div>

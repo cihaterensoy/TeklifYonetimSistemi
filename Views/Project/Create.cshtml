@@ -1,0 +1,94 @@
+﻿@model TeklifYonetimSistemi.Models.ProjectModel
+
+@{
+    ViewData["Title"] = "Yeni Proje Oluştur";
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3><i class="fas fa-hard-hat"></i> Yeni Proje Oluştur</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+
+                <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        <div class="form-group mb-3">
+                            <label class="fw-bold">Müşteri Seçimi</label>
+                            <select asp-for="CustomerId" class="form-control" asp-items="ViewBag.Musteriler">
+                                <option value="">-- Lütfen Bir Müşteri Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ProjeAdi" class="control-label fw-bold">Proje Adı</label>
+                            <input asp-for="ProjeAdi" class="form-control" placeholder="Örn: Gebze Lojistik Depo Kurulumu" />
+                            <span asp-validation-for="ProjeAdi" class="text-danger"></span>
+                        </div>
+                        
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BaslangicTarihi" class="control-label">Başlangıç Tarihi</label>
+                                <input asp-for="BaslangicTarihi" type="date" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="BitisTarihi" class="control-label">Bitiş Tarihi (Tahmini)</label>
+                                <input asp-for="BitisTarihi" type="date" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h5 class="text-muted">Şantiye / Proje Yeri İletişim</h5>
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Telefon" class="control-label">Şantiye Tel</label>
+                                <input asp-for="Telefon" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="control-label">Şantiye Email</label>
+                                <input asp-for="Email" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Il" class="control-label">İl</label>
+                                <input asp-for="Il" class="form-control" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Ilce" class="control-label">İlçe</label>
+                                <input asp-for="Ilce" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Adres" class="control-label">Açık Adres</label>
+                            <textarea asp-for="Adres" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ProjeNotu" class="control-label">Proje Notları</label>
+                    <textarea asp-for="ProjeNotu" class="form-control" rows="3" placeholder="Özel gereksinimler, vinç ihtiyacı vb."></textarea>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-action="Index" class="btn btn-secondary me-md-2">İptal</a>
+                    <button type="submit" class="btn btn-success btn-lg">Projeyi Kaydet</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

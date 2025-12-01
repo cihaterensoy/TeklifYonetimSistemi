@@ -1,0 +1,62 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Contexts\" />
+    <None Remove="Views\Login\" />
+    <None Remove="Views\Admin\" />
+    <None Remove="Views\Musteri\" />
+    <None Remove="Views\Project\" />
+    <None Remove="Views\Product\" />
+    <None Remove="Models\ViewModels\" />
+    <None Remove="Views\KullaniciEkle\" />
+    <None Remove="Views\Quote\" />
+    <None Remove="Views\QuoteItem\" />
+    <None Remove="Data\" />
+    <None Remove="Services\" />
+    <None Remove="Views\Order\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Contexts\" />
+    <Folder Include="Views\Login\" />
+    <Folder Include="Views\Admin\" />
+    <Folder Include="Views\Musteri\" />
+    <Folder Include="Views\Project\" />
+    <Folder Include="Views\Product\" />
+    <Folder Include="Models\ViewModels\" />
+    <Folder Include="Views\KullaniciEkle\" />
+    <Folder Include="Views\Quote\" />
+    <Folder Include="Views\QuoteItem\" />
+    <Folder Include="Data\" />
+    <Folder Include="Services\" />
+    <Folder Include="Views\Order\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Views\Musteri\Index.cshtml" />
+    <Content Remove="Views\KullaniciEkle\Goruntule.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.editorconfig" />
+  </ItemGroup>
+</Project>

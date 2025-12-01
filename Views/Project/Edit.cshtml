@@ -1,0 +1,111 @@
+﻿@model TeklifYonetimSistemi.Models.ProjectModel
+
+@{
+    ViewData["Title"] = "Projeyi Düzenle";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-edit"></i> Proje Düzenleme Formu</h4>
+        </div>
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <h5 class="text-secondary border-bottom pb-2 mb-3">Temel Bilgiler</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="CustomerId" class="form-label fw-bold">Müşteri (Firma)</label>
+                        <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Musteriler">
+                            <option value="">-- Müşteri Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ProjeAdi" class="form-label fw-bold">Proje Adı</label>
+                        <input asp-for="ProjeAdi" class="form-control" placeholder="Proje ismini giriniz" />
+                        <span asp-validation-for="ProjeAdi" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    
+
+                    <div class="col-md-4">
+                        <label asp-for="BaslangicTarihi" class="form-label fw-bold">Başlangıç Tarihi</label>
+                        <input asp-for="BaslangicTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="BaslangicTarihi" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="BitisTarihi" class="form-label fw-bold">Bitiş Tarihi</label>
+                        <input asp-for="BitisTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="BitisTarihi" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <h5 class="text-secondary border-bottom pb-2 mb-3 mt-4">Lokasyon ve İletişim</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">E-Posta</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="ornek@firma.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Telefon" class="form-label">Telefon</label>
+                        <input asp-for="Telefon" type="tel" class="form-control" placeholder="0555 555 55 55" />
+                        <span asp-validation-for="Telefon" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Il" class="form-label">Şehir (İl)</label>
+                        <input asp-for="Il" class="form-control" />
+                        <span asp-validation-for="Il" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Ilce" class="form-label">İlçe</label>
+                        <input asp-for="Ilce" class="form-control" />
+                        <span asp-validation-for="Ilce" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Adres" class="form-label">Açık Adres</label>
+                    <textarea asp-for="Adres" class="form-control" rows="2" placeholder="Mahalle, sokak, kapı no..."></textarea>
+                    <span asp-validation-for="Adres" class="text-danger"></span>
+                </div>
+
+                <h5 class="text-secondary border-bottom pb-2 mb-3 mt-4">Diğer Bilgiler</h5>
+                <div class="mb-3">
+                    <label asp-for="ProjeNotu" class="form-label">Proje Notları</label>
+                    <textarea asp-for="ProjeNotu" class="form-control" rows="4" placeholder="Proje ile ilgili özel notlar..."></textarea>
+                    <span asp-validation-for="ProjeNotu" class="text-danger"></span>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> İptal / Listeye Dön
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

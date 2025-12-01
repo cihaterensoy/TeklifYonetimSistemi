@@ -1,0 +1,162 @@
+﻿@model List<TeklifYonetimSistemi.Models.CustomerModel>
+
+@{
+    ViewData["Title"] = "Müşteri Yönetimi";
+}
+
+<div class="container mt-4">
+
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-dark mb-0">
+                <i class="bi bi-people-fill text-primary"></i> Müşteri Portföyü
+            </h2>
+            <p class="text-muted mb-0">Toplam @(Model?.Count ?? 0) kayıtlı müşteri bulunmaktadır.</p>
+        </div>
+
+        <div class="col-md-6 d-flex justify-content-md-end gap-2 mt-3 mt-md-0">
+            <div class="input-group" style="max-width: 300px;">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="musteriAra" class="form-control border-start-0 ps-0" placeholder="Firma veya isim ara...">
+            </div>
+
+            <a asp-controller="Musteri" asp-action="Create" class="btn btn-primary shadow-sm">
+                <i class="bi bi-person-plus-fill"></i> Yeni Müşteri
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+
+            <div class="table-responsive" style="min-height: 400px;">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Müşteri / Firma</th>
+                            <th>Müşteri Ekleyen Kişi</th>
+                            <th>Telefon</th>
+                            <th>Email</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="musteriTablosu">
+                        @if (Model == null || Model.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center justify-content-center opacity-50">
+                                        <i class="bi bi-folder-x fs-1 mb-3"></i>
+                                        <h5>Henüz müşteri kaydı yok.</h5>
+                                        <p>Yeni bir müşteri ekleyerek teklif oluşturmaya başlayın.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                var basHarf = !string.IsNullOrEmpty(item.FirmaUnvani) ? item.FirmaUnvani.Substring(0, 1).ToUpper() : "?";
+                                var badgeColors = new[] { "bg-primary", "bg-success", "bg-danger", "bg-warning text-dark", "bg-info text-dark", "bg-dark" };
+                                var randomColor = badgeColors[item.Id % badgeColors.Length];
+
+                                <tr class="musteri-satir">
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle @randomColor text-white d-flex align-items-center justify-content-center me-3 shadow-sm"
+                                                 style="width: 45px; height: 45px; font-weight:bold; font-size:1.2rem;">
+                                                @basHarf
+                                            </div>
+                                            
+                                            <div>
+                                                <div class="fw-bold text-dark fs-6 aranan-metin">@item.FirmaUnvani</div>
+           
+                                            </div>
+                                            
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center text-muted">
+                                            <i class="bi bi-person-circle me-2 text-primary"></i>
+                                            @if (item.Kullanici != null)
+                                            {
+                                                <span class="fw-semibold">@item.Kullanici.Isim @item.Kullanici.Soyisim</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="fst-italic">Bilinmiyor</span>
+                                            }
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex align-items-center text-muted">
+                                            <i class="bi bi-telephone me-2"></i> @item.Telefon
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <a href="mailto:@item.Email" class="text-decoration-none text-secondary">
+                                            <i class="bi bi-envelope me-1"></i> @item.Email
+                                        </a>
+                                    </td>
+
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a asp-controller="Project" asp-action="Index" asp-route-customerId="@item.Id" class="btn btn-info btn-sm text-white">
+                                                <i class="bi bi-folder2-open"></i> Projeler
+                                            </a>
+
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-gear"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                                    <li>
+                                                        <a class="dropdown-item" asp-action="Details" asp-route-id="@item.Id">
+                                                            <i class="bi bi-eye text-info me-2"></i> Detaylar
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">
+                                                            <i class="bi bi-pencil text-warning me-2"></i> Düzenle
+                                                        </a>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post">
+                                                            <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Silmek istediğinize emin misiniz?');">
+                                                                <i class="bi bi-trash me-2"></i> Sil
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light py-2">
+            <small class="text-muted">Listede toplam @(Model?.Count ?? 0) kayıt gösteriliyor.</small>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>$(document).ready(function () {
+            $("#musteriAra").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#musteriTablosu .musteri-satir").filter(function () {
+                    // Sadece görünen metinlerde arama yapar
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });</script>
+}

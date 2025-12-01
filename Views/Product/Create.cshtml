@@ -1,0 +1,139 @@
+﻿@model TeklifYonetimSistemi.Models.ProductModel
+
+@{
+    ViewData["Title"] = "Yeni Ürün Ekle";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0"><i class="bi bi-box-seam"></i> Yeni Ürün veya Hizmet Ekle</h4>
+        </div>
+        <div class="card-body bg-light">
+
+            <form asp-action="Create" method="post">
+                <div class="row g-3">
+
+                    @* --- TEMEL BİLGİLER --- *@
+                    <h6 class="text-primary border-bottom pb-2">Temel Bilgiler</h6>
+
+                    <div class="col-md-6">
+                        <label asp-for="UrunAdi" class="form-label fw-bold">Ürün Adı</label>
+                        <input asp-for="UrunAdi" class="form-control" placeholder="Örn: Dell R750 Sunucu" />
+                        <span asp-validation-for="UrunAdi" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="Kategori" class="form-label fw-bold">Kategori</label>
+                        <select asp-for="Kategori" class="form-select" asp-items="ViewBag.Kategoriler">
+                            <option value="">Seçiniz...</option>
+                        </select>
+                        <span asp-validation-for="Kategori" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="Birim" class="form-label fw-bold">Birim</label>
+                        <select asp-for="Birim" class="form-select" asp-items="ViewBag.Birimler">
+                            <option value="">Seçiniz...</option>
+                        </select>
+                    </div>
+
+                    @* --- FİYATLANDIRMA (YENİLENEN KISIM) --- *@
+                    <h6 class="text-primary border-bottom pb-2 mt-4">Fiyatlandırma ve Maliyet</h6>
+
+                    <div class="col-md-3">
+                        <label asp-for="AlisFiyati" class="form-label fw-bold text-danger">Alış Maliyeti</label>
+                        <input asp-for="AlisFiyati" id="inputAlis"  type="number" step="0.01" class="form-control" />
+                        <div class="form-text">Ürünün bize geliş fiyatı.</div>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="VarsayilanKarMarji" class="form-label fw-bold text-primary">Varsayılan Kâr (%)</label>
+                        <input asp-for="VarsayilanKarMarji" id="inputKarMarji" type="number" step="0.01" class="form-control" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="SatisFiyatListesi" class="form-label fw-bold text-success">Liste Satış Fiyatı</label>
+                        <input asp-for="SatisFiyatListesi" id="inputSatis" type="number" step="0.01" class="form-control" readonly />
+                        <div class="form-text">Müşteriye görünen katalog fiyatı.</div>
+                    </div>
+                    @*readonly sayesinde kullanıcı bir şey giremiyor ama backende gönderiliyor*@
+                    <div class="col-md-3">
+                        <label asp-for="ParaBirimi" class="form-label fw-bold">Para Birimi</label>
+                        <select asp-for="ParaBirimi" class="form-select">
+                            <option value="TL">TL (Türk Lirası)</option>
+                            <option value="USD">USD (Dolar)</option>
+                            <option value="EUR">EUR (Euro)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label asp-for="KDVOrani" class="form-label fw-bold">KDV (%)</label>
+                        <input asp-for="KDVOrani" type="number" class="form-control" value="20" />
+                    </div>
+
+                    @* --- STOK YÖNETİMİ --- *@
+                    <h6 class="text-primary border-bottom pb-2 mt-4">Stok Yönetimi</h6>
+
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check form-switch pt-2">
+                            <input class="form-check-input" type="checkbox" id="stokSwitch" asp-for="StokTakibiYapilsinMi">
+                            <label class="form-check-label fw-bold" for="stokSwitch">Stok Takibi Yapılsın mı?</label>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6" id="stokKutusu">
+                        <label asp-for="StokMiktari" class="form-label fw-bold">Stok Miktarı</label>
+                        <input asp-for="StokMiktari" type="number" class="form-control" />
+                    </div>
+
+                    @* --- DETAYLAR --- *@
+                    <div class="col-12 mt-4">
+                        <label asp-for="Aciklama" class="form-label">Teknik Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="col-12 text-end mt-4">
+                        <a asp-action="Liste" class="btn btn-secondary">İptal</a>
+                        <button type="submit" class="btn btn-success px-5">Kaydet</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>$(document).ready(function () {
+            const stokSwitch = $("#stokSwitch");
+            const stokInput = $("#StokMiktari");
+            const stokKutusu = $("#stokKutusu");
+
+            function toggleStok() {
+                if (stokSwitch.is(":checked")) {
+                    stokKutusu.fadeIn();
+                    stokInput.prop('disabled', false);
+                } else {
+                    stokKutusu.fadeOut();
+                    stokInput.prop('disabled', true);
+                    stokInput.val(0);
+                }
+            }
+            toggleStok();
+            stokSwitch.change(function () { toggleStok(); });
+        });</script>
+    <script>$(document).ready(function () {
+
+            $("#inputAlis, #inputKarMarji").on("input", function () {
+
+                var alis = parseFloat($("#inputAlis").val()) || 0;
+                var marj = parseFloat($("#inputKarMarji").val()) || 0;
+
+                var satis = alis + (alis * marj / 100);
+
+                $("#inputSatis").val(satis.toFixed(2));
+            });
+
+        });</script>
+
+}

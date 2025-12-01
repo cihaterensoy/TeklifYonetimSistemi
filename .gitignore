@@ -1,0 +1,39 @@
+# Build klasörleri
+bin/
+obj/
+
+# Kullanıcı ayarları
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+
+# Paketler
+packages/
+*.nupkg
+
+# Logs
+*.log
+
+# Publish çıktısı
+publish/
+
+# wwwroot otomatik üretilen içerikler
+wwwroot/lib/
+wwwroot/node_modules/
+wwwroot/assets
+wwwroot/css
+
+# Rider / VS özel dosyaları
+.idea/
+*.iml
+*.csproj.user
+
+# Sistem dosyaları
+.DS_Store
+
+# Diğer
+Thumbs.db

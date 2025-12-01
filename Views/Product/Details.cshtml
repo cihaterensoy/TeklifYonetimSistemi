@@ -1,0 +1,71 @@
+﻿@model TeklifYonetimSistemi.Models.ProductModel
+
+@{
+    ViewData["Title"] = "Ürün Detayları";
+}
+
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-info-circle"></i> Ürün Kartı</h4>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-light btn-sm text-info fw-bold">
+                <i class="bi bi-pencil"></i> Düzenle
+            </a>
+        </div>
+        <div class="card-body bg-white">
+            <div class="row">
+                @* SOL TARAF: GENEL BİLGİLER *@
+                <div class="col-md-6 border-end">
+                    <h5 class="text-primary mb-3">Genel Bilgiler</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4 text-muted">Ürün Adı:</dt>
+                        <dd class="col-sm-8 fw-bold fs-5">@Model.UrunAdi</dd>
+
+                        <dt class="col-sm-4 text-muted">Kategori:</dt>
+                        <dd class="col-sm-8"><span class="badge bg-secondary">@Model.Kategori</span></dd>
+                    </dl>
+
+                    <h5 class="text-primary mb-3 mt-4">Fiyatlandırma</h5>
+                    <div class="alert alert-light border">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-6 text-danger">Maliyet (Alış):</dt>
+                            <dd class="col-sm-6 text-danger fw-bold">@Model.AlisFiyati.ToString("N2") @Model.ParaBirimi</dd>
+
+                            <dt class="col-sm-6 text-success">Liste Satış Fiyatı:</dt>
+                            <dd class="col-sm-6 text-success fw-bold fs-5">@Model.SatisFiyatListesi.ToString("N2") @Model.ParaBirimi</dd>
+
+                            <dt class="col-sm-6 text-muted">KDV Oranı:</dt>
+                            <dd class="col-sm-6 text-muted">%@Model.KDVOrani</dd>
+                        </dl>
+                    </div>
+                </div>
+
+                @* SAĞ TARAF: STOK VE DETAY *@
+                <div class="col-md-6 ps-md-4">
+                    <h5 class="text-primary mb-3">Stok Durumu</h5>
+                    <dl class="row">
+                        <dt class="col-sm-5 text-muted">Takip:</dt>
+                        <dd class="col-sm-7">
+                            @(Model.StokTakibiYapilsinMi ? "Yapılıyor" : "Yapılmıyor")
+                        </dd>
+
+                        @if (Model.StokTakibiYapilsinMi)
+                        {
+                            <dt class="col-sm-5 text-muted">Adet:</dt>
+                            <dd class="col-sm-7 fw-bold">@Model.StokMiktari</dd>
+                        }
+                    </dl>
+
+                    <h5 class="text-primary mb-3 mt-4">Teknik Açıklama</h5>
+                    <p class="text-muted border p-3 rounded bg-light">
+                        @Model.Aciklama
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-4 border-top pt-3">
+                <a asp-action="Liste" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Listeye Dön</a>
+            </div>
+        </div>
+    </div>
+</div>

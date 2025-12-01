@@ -1,0 +1,117 @@
+﻿@model IEnumerable<TeklifYonetimSistemi.Models.QuoteModel>
+@{
+    ViewData["Title"] = "Teklif Listesi";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Teklif Yönetimi @(ViewBag.ProjeAdi != null ? " - " + ViewBag.ProjeAdi : "")</h2>
+        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary">Projelerime Dön</a>
+    </div>
+
+    @* Başarı ve Hata Mesajları için TempData Kontrolü *@
+    @if (TempData["BasariMesaji"] != null)
+    {
+        <div class="alert alert-success">@TempData["BasariMesaji"]</div>
+    }
+    @if (TempData["HataMesaji"] != null)
+    {
+        <div class="alert alert-danger">@TempData["HataMesaji"]</div>
+    }
+
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Teklif No</th>
+                <th>Başlık</th>
+                <th>Müşteri / Proje</th>
+                <th>Toplam Tutar (₺)</th>
+                <th>Durum</th>
+                <th>Tarih</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.TeklifNo</td>
+                    <td>@item.TeklifAdi</td>
+                    <td>
+                        <strong>@item.Project.Customer.FirmaUnvani</strong> <br />
+                        <small>@item.Project.ProjeAdi</small>
+                    </td>
+                    <td>@item.GenelToplam.ToString("C2")</td>
+                    <td>
+                        @* Duruma göre renkli rozet gösterme *@
+                        @{
+                            var badgeClass = item.Durum switch
+                            {
+                                QuoteStatus.Taslak => "badge bg-secondary",
+                                //QuoteStatus.OnayBekliyor => "badge bg-warning text-dark",
+                                QuoteStatus.Onaylandi => "badge bg-success",
+                                QuoteStatus.Reddedildi => "badge bg-danger",
+                                _ => "badge bg-info"
+                            };
+                        }
+                        <span class="@badgeClass">@item.Durum.ToString()</span>
+                    </td>
+                    <td>@item.TeklifOlusturulmaTarihi.ToShortDateString()</td>
+                    <td>
+                        @* Detaylar ve Ürün Ekleme (Sepet) *@
+
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("SatisElemani"))
+                        {
+                            <a asp-controller="QuoteItem" asp-action="Index" asp-route-quoteId="@item.Id" class="btn btn-sm btn-primary">Ürünler</a>
+                        }
+
+                        @if ((item.Durum != QuoteStatus.Onaylandi && User.IsInRole("Admin")) || item.Durum == QuoteStatus.Taslak)
+                        {
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;"
+                                  onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i> Sil
+                                </button>
+                            </form>
+                        }
+
+
+
+                        @* Taslak ise Onaya Gönderme Butonu *@
+                        @if (item.Durum == QuoteStatus.Taslak)
+                        {
+                            <form asp-action="SubmitForApproval" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Teklifi onaya göndermek istediğinizden emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-success">Onaya Gönder</button>
+                            </form>
+                        }
+
+                        @if (item.Durum == QuoteStatus.YoneticiOnayBekliyor && User.IsInRole("Admin"))
+                        {
+                            <form asp-action="Approve" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi ONAYLAMAK istediğinizden emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-success">ONAYLA</button>
+                            </form>
+                            <form asp-action="Revize" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi ONAYLAMAK istediğinizden emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-success">Revizeye Gönder</button>
+                            </form>
+                            <form asp-action="Reject" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi REDDETMEK istediğinizden emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-danger">REDDET</button>
+                            </form>
+                        }
+
+                        @if (item.Durum == QuoteStatus.MusteriOnayiBekliyor && User.IsInRole("FirmaKullanicisi"))
+                        {
+                            <form asp-action="MusteriOnay" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu üi ONAYLAMAK istediğinizden emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-success">ONAYLA</button>
+                            </form>
+                            <form asp-action="MusteriReject" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi REDDETMEK istediğinizden emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-danger">REDDET</button>
+                            </form>
+                        }
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

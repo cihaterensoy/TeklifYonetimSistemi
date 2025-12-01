@@ -1,0 +1,145 @@
+﻿@model TeklifYonetimSistemi.Models.QuoteModel
+
+@{
+    ViewData["Title"] = "Teklif Detayları";
+}
+
+<div class="container mt-4">
+    @* Üst Başlık ve Navigasyon *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Teklif Detayları: @Model.TeklifAdi</h2>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Teklif Listesine Dön
+            </a>
+            @if (Model.Durum == QuoteStatus.Taslak)
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                    <i class="bi bi-pencil"></i> Başlığı Düzenle
+                </a>
+            }
+        </div>
+    </div>
+
+    @* Genel Bilgiler Kartı *@
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light fw-bold">Teklif Bilgileri</div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Teklif No:</dt>
+                <dd class="col-sm-9">@Model.TeklifNo</dd>
+
+                <dt class="col-sm-3">Müşteri:</dt>
+                <dd class="col-sm-9">
+                    @(Model.Project?.Customer?.FirmaUnvani ?? "-")
+                </dd>
+
+                <dt class="col-sm-3">Proje:</dt>
+                <dd class="col-sm-9">
+                    @(Model.Project?.ProjeAdi ?? "-")
+                </dd>
+
+                <dt class="col-sm-3">Durum:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-info text-dark">@Model.Durum</span>
+                </dd>
+                @*
+                <dt class="col-sm-3">KDV Oranı (%):</dt>
+                <dd class="col-sm-9">@Model.KDVOrani.ToString("N2")</dd>
+                    *@
+            </dl>
+        </div>
+    </div>
+
+    @* Teklif Kalemleri (QuoteItems) Listesi *@
+    <div class="mb-3">
+        <h3>Teklif Kalemleri <span class="text-muted fs-5">(@(Model.QuoteItems?.Count ?? 0))</span></h3>
+    </div>
+
+    @* .Any() parantezleri eklendi ve Null kontrolü yapıldı *@
+    @if (Model.QuoteItems != null && Model.QuoteItems.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ürün Adı</th>
+                        <th class="text-center">Miktar</th>
+                        <th class="text-center">Birim</th>
+                        <th class="text-end">Satır Toplamı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.QuoteItems)
+                    {
+                        <tr>
+                            <td>@item.UrunAdi</td>
+                            <td class="text-center">@item.Miktar</td>
+                            <td class="text-center">@item.Birim</td>
+                            <td class="text-end fw-bold">@item.SatirToplami.ToString("C2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+            <div>
+                Bu teklife henüz ürün veya hizmet satırı eklenmemiştir.
+            </div>
+        </div>
+    }
+
+    @* Finansal Özet *@
+    <div class="row justify-content-end mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Ara Toplam:</span>
+                        <span class="fw-bold">@Model.AraToplam.ToString("C2")</span>
+                    </div>
+                    @*
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>KDV (@Model.KDVOrani.ToString("N0")%):</span>
+                        <span>@((Model.GenelToplam - Model.AraToplam).ToString("C2"))</span>
+                    </div>
+                        *@
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0">Genel Toplam:</span>
+                        <span class="h4 text-success mb-0">@Model.GenelToplam.ToString("C2")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Aksiyon Butonları *@
+    <div class="mt-4 pb-5">
+        <div class="d-flex gap-2">
+            @* Ürün Ekleme/Çıkarma Sayfasına Git *@
+            @if (User.IsInRole("Admin") || User.IsInRole("SatisElemani"))
+            {
+                <a asp-controller="QuoteItem" asp-action="Index" asp-route-quoteId="@Model.Id" class="btn btn-lg btn-primary">
+                    <i class="bi bi-cart-plus"></i> Ürün/Hizmetleri Yönet
+                </a>
+            }
+
+            
+
+            @* Onaya Gönder Butonu (Sadece Taslak ise görünür) *@
+            @if (Model.Durum == QuoteStatus.Taslak)
+            {
+                <form asp-action="SubmitForApproval" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Teklifi onaya göndermek istediğinizden emin misiniz?');">
+                    <button type="submit" class="btn btn-lg btn-success">
+                        <i class="bi bi-check-circle"></i> Onaya Gönder
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

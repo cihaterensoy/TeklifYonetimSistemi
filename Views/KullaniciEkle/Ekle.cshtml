@@ -1,0 +1,94 @@
+﻿@model TeklifYonetimSistemi.Models.ViewModels.KullaniciEkleViewModel
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle</h4>
+        <a href="/Home/Index" class="btn btn-light btn-sm text-primary fw-bold">İptal</a>
+    </div>
+    <div class="card-body">
+        <form asp-action="Ekle" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Isim" class="form-label fw-bold">İsim</label>
+                    <input asp-for="Isim" class="form-control" placeholder="Örn: Ahmet" />
+                    <span asp-validation-for="Isim" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Soyisim" class="form-label fw-bold">Soyisim</label>
+                    <input asp-for="Soyisim" class="form-control" placeholder="Örn: Yılmaz" />
+                    <span asp-validation-for="Soyisim" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label fw-bold">Email (Kullanıcı Adı)</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="ornek@sirket.com" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Sifre" class="form-label fw-bold">Şifre</label>
+                <input asp-for="Sifre" type="password" class="form-control" />
+                <span asp-validation-for="Sifre" class="text-danger small"></span>
+                <small class="text-muted d-block mt-1"><i class="fas fa-info-circle"></i> En az 3 karakter olmalı.</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Rol" class="form-label fw-bold">Yetki (Rol)</label>
+                <select asp-for="Rol" class="form-select" asp-items="ViewBag.Roller" id="rolSecimi" onchange="rolDegisti()">
+                    <option value="">Bir Rol Seçiniz</option>
+                </select>
+                <span asp-validation-for="Rol" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4 p-3 bg-light border rounded border-primary" id="firmaKutusu" style="display:none;">
+                <label asp-for="CustomerId" class="form-label fw-bold text-primary">
+                    <i class="fas fa-building"></i> Bağlı Olduğu Firma (Opsiyonel)
+                </label>
+                <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Firmalar">
+                    <option value="">-- Firma Yok / Serbest Kullanıcı --</option>
+                </select>
+                <small class="text-muted">
+                    Eğer bu kullanıcı bir müşteri firmasının yetkilisiyse buradan seçiniz. Seçmezseniz herhangi bir firmaya bağlı olmaz.
+                </small>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="fas fa-save"></i> Kullanıcıyı Oluştur
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>function rolDegisti() {
+            var secilenRol = document.getElementById("rolSecimi").value;
+            var firmaDiv = document.getElementById("firmaKutusu");
+
+            // EĞER SEÇİLEN ROL "FirmaKullanicisi" İSE KUTUYU AÇ
+            // Buradaki string veritabanındaki rol ismiyle (UserRoles.cs) BİREBİR AYNI olmalı.
+            if (secilenRol === "FirmaKullanicisi") {
+                firmaDiv.style.display = "block";
+
+                // Animasyonlu giriş (isteğe bağlı)
+                firmaDiv.classList.add("animate__animated", "animate__fadeIn");
+            } else {
+                firmaDiv.style.display = "none";
+
+                // Kutu gizlenince seçimi temizlemek istersen şu satırı açabilirsin:
+                // document.getElementById("CustomerId").value = "";
+            }
+        }
+
+        // Sayfa yüklendiğinde de kontrol et (Eğer hata alıp geri dönerse kutu açık kalsın diye)
+        document.addEventListener("DOMContentLoaded", function() {
+            rolDegisti();
+        });</script>
+}

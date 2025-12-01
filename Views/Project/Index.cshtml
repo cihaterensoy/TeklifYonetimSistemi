@@ -1,0 +1,163 @@
+﻿@model IEnumerable<TeklifYonetimSistemi.Models.ProjectModel>
+
+@{
+    ViewData["Title"] = "Proje Listesi";
+}
+
+<div class="container mt-4">
+    @if (!User.IsInRole("FirmaKullanicisi"))
+        {
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tasks text-primary"></i> Proje Yönetimi</h2>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus"></i> Yeni Proje Ekle
+        </a>
+    </div>
+      }
+
+    @if (ViewBag.MusteriAdi != null)
+    {
+        <div class="alert alert-info border-0 shadow-sm d-flex justify-content-between align-items-center mb-3">
+            <span>
+                <i class="fas fa-filter me-2"></i>
+                <strong>@ViewBag.MusteriAdi</strong> firmasına ait projeleri görüntülüyorsunuz.
+            </span>
+            <a asp-action="Index" asp-route-customerId="" class="btn btn-sm btn-light text-primary fw-bold">
+                <i class="fas fa-times"></i> Filtreyi Kaldır
+            </a>
+        </div>
+    }
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th class="ps-3">Proje Adı</th>
+                            <th>Müşteri (Firma)</th>
+                            <th>Şehir/İlçe</th>
+                            <th>Başlangıç</th>
+                            @*<th>Durum</th>*@
+                            <th class="text-end pe-3">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="fas fa-folder-open fs-1 mb-3"></i>
+                                    <p>Henüz kayıtlı bir proje bulunmamaktadır.</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold ps-3">@item.ProjeAdi</td>
+
+                                    <td>
+                                        @if (item.Customer != null)
+                                        {
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="fas fa-building me-1"></i> @item.Customer.FirmaUnvani
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Müşteri Silinmiş</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Il))
+                                        {
+                                            <span>@item.Il / @item.Ilce</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+
+                                    <td>@item.BaslangicTarihi.ToString("dd.MM.yyyy")</td>
+
+                                    @*
+        <td>
+            @if (item.ProjeAktifMi)
+            {
+                <span class="badge bg-success bg-opacity-75">
+                    <i class="fas fa-check-circle me-1"></i> Aktif
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">
+                    <i class="fas fa-stop-circle me-1"></i> Pasif
+                </span>
+            }
+        </td>
+                                    *@
+
+                                <td class="text-end pe-3">
+                                    @if (!User.IsInRole("FirmaKullanicisi"))
+                                    {
+
+                                        @if (item.Quotes != null && item.Quotes.Any())
+                                        {
+                                            // SENARYO 1: TEKLİF ZATEN VAR
+                                            // İlk teklifin ID'sini alıp detay sayfasına yönlendiriyoruz
+                                            var mevcutTeklifId = item.Quotes.First().Id;
+
+                                            <a class="btn btn-sm btn-info text-white"
+                                               asp-controller="QuoteItem"
+                                               asp-action="Index"
+                                               asp-route-quoteId="@mevcutTeklifId"
+                                               title="Mevcut Teklifi İncele">
+                                                <i class="fas fa-eye"></i> İncele
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <div class="btn-group" role="group">
+                                                <a class="btn btn-sm btn-success text-white"
+                                                   asp-controller="Quote"
+                                                   asp-action="Create"
+                                                   asp-route-projectId="@item.Id"
+                                                   title="Teklif Ver">
+                                                    <i class="fas fa-file-invoice-dollar"></i> Teklif
+                                                </a>
+
+
+                                            </div>
+
+                                            <form asp-action="Edit" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-warning text-dark" title="Projeyi Düzenle">
+                                                    <i class="bi bi-pencil"></i> Düzenle
+                                                </button>
+                                            </form>
+                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;"
+                                                  onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-trash"></i> Sil
+                                                </button>
+                                            </form>
+                                        }
+
+
+
+                                    }
+                                </td>
+
+                                    </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

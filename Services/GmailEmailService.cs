@@ -7,7 +7,7 @@ namespace TeklifYonetimSistemi.Services
     public class MicrosoftEmailService : IEmailService
     {
         private readonly string _fromEmail = "TechSolutions@outlook.com.tr";
-        private readonly string _password= "Techsolution-123!";
+        private readonly string _password= 
 
         public async Task SendEmailAsync(string toEmail,string subject,string body)
         {

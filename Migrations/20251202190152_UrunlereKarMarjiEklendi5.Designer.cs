@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeklifYonetimSistemi.Contexts;
 
@@ -11,9 +12,11 @@ using TeklifYonetimSistemi.Contexts;
 namespace TeklifYonetimSistemi.Migrations
 {
     [DbContext(typeof(VeriTabaniDB))]
-    partial class VeriTabaniDBModelSnapshot : ModelSnapshot
+    [Migration("20251202190152_UrunlereKarMarjiEklendi5")]
+    partial class UrunlereKarMarjiEklendi5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -542,37 +545,6 @@ namespace TeklifYonetimSistemi.Migrations
                     b.ToTable("Quotes");
                 });
 
-            modelBuilder.Entity("TeklifYonetimSistemi.Models.TeklifMesaj", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("GonderenUserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("GonderilmeTarihi")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MesajMetni")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("OkunduMu")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("TeklifId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TeklifId");
-
-                    b.ToTable("TeklifMesajlar");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -683,17 +655,6 @@ namespace TeklifYonetimSistemi.Migrations
                         .IsRequired();
 
                     b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("TeklifYonetimSistemi.Models.TeklifMesaj", b =>
-                {
-                    b.HasOne("TeklifYonetimSistemi.Models.QuoteModel", "Teklif")
-                        .WithMany()
-                        .HasForeignKey("TeklifId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Teklif");
                 });
 
             modelBuilder.Entity("TeklifYonetimSistemi.Models.CustomerModel", b =>

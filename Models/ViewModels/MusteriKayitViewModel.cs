@@ -1,4 +1,6 @@
-﻿namespace TeklifYonetimSistemi.Models.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TeklifYonetimSistemi.Models.ViewModels
 {
     public class MusteriKayitViewModel
     {
@@ -10,6 +12,15 @@
         public string Adres { get; set; }
         public string? Fax { get; set; }
         public string? FirmaDetay { get; set; }
+        [Display(Name = "Vergi No / TCKN")]
+        [StringLength(11, ErrorMessage = "Vergi No en fazla 11 karakter olabilir.")]
+        public string? VergiNo { get; set; }
+
+        [Display(Name = "Vergi Dairesi")]
+        public string? VergiDairesi { get; set; }
+
+        // Bu alan formdan gelmeyebilir (Controller hesaplayacak) ama modelde durması sorun değil.
+        public bool EFaturaMukellefiMi { get; set; } = false;
 
         public string? YetkiliIsim { get; set; }
         public string? YetkiliSoyisim { get; set; }

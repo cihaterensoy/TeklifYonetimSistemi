@@ -172,8 +172,8 @@ namespace TeklifYonetimSistemi.Services
 
                             column.Item().PaddingVertical(5).AlignRight().Row(row =>
                             {
-                                //row.RelativeItem().Text($"KDV (%{quoteData.KDVOrani}):");
-                                //row.ConstantItem(150).Text($"{quoteData.KDVTutari:C}").Bold();
+                                row.RelativeItem().Text($"Toplam KDV:");
+                                row.ConstantItem(150).Text($"{quoteData.ToplamKDV:C}").Bold();
                             });
 
                             column.Item().PaddingVertical(10).AlignRight().Row(row =>

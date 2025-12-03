@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeklifYonetimSistemi.Contexts;
 
@@ -11,9 +12,11 @@ using TeklifYonetimSistemi.Contexts;
 namespace TeklifYonetimSistemi.Migrations
 {
     [DbContext(typeof(VeriTabaniDB))]
-    partial class VeriTabaniDBModelSnapshot : ModelSnapshot
+    [Migration("20251203093337_teklifMesajlari3")]
+    partial class teklifMesajlari3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

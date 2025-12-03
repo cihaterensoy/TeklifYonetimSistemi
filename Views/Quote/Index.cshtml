@@ -6,7 +6,10 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Teklif Yönetimi @(ViewBag.ProjeAdi != null ? " - " + ViewBag.ProjeAdi : "")</h2>
-        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary">Projelerime Dön</a>
+        @* Projelerime Dön butonu sağdaki filtreleme mantığına uyum sağlaması için revize edildi *@
+        <a asp-controller="Project" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-folder"></i> Projelerime Dön
+        </a>
     </div>
 
     @* Başarı ve Hata Mesajları için TempData Kontrolü *@
@@ -22,93 +25,145 @@
     <table class="table table-hover table-striped">
         <thead>
             <tr>
-                <th>Teklif No</th>
-                <th>Başlık</th>
-                <th>Müşteri / Proje</th>
-                <th>Toplam Tutar (₺)</th>
-                <th>Durum</th>
-                <th>Tarih</th>
-                <th>İşlemler</th>
+                <th style="width: 10%;">Teklif No</th>
+                <th style="width: 25%;">Başlık</th>
+                <th style="width: 25%;">Müşteri / Proje</th>
+                <th style="width: 15%;">Toplam Tutar (₺)</th>
+                <th style="width: 10%;">Durum</th>
+                <th style="width: 5%;">Tarih</th>
+                <th style="width: 10%; text-align: center;">İşlemler</th> @* Tek bir sütun yeterli *@
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.TeklifNo</td>
+                    @* 1. Teklif No (Kalın) *@
+                    <td><strong>@item.TeklifNo</strong></td>
+
+                    @* 2. Başlık (Sadeleştirme: Alt detayı kaldırdık, sadece ad var) *@
                     <td>@item.TeklifAdi</td>
+
+                    @* 3. Müşteri / Proje (Müşteri kalın, Proje küçük) *@
                     <td>
                         <strong>@item.Project.Customer.FirmaUnvani</strong> <br />
-                        <small>@item.Project.ProjeAdi</small>
+                        <small class="text-muted">@item.Project.ProjeAdi</small>
                     </td>
-                    <td>@item.GenelToplam.ToString("C2")</td>
+
+                    @* 4. Toplam Tutar (Vurgulama: Kalın, kuruş hanesi sadeleştirildi) *@
+                    <td><strong>@item.GenelToplam.ToString("#,##0") ₺</strong></td>
+
+                    @* 5. Durum (Daha yuvarlak rozetler) *@
                     <td>
-                        @* Duruma göre renkli rozet gösterme *@
                         @{
                             var badgeClass = item.Durum switch
                             {
-                                QuoteStatus.Taslak => "badge bg-secondary",
-                                //QuoteStatus.OnayBekliyor => "badge bg-warning text-dark",
-                                QuoteStatus.Onaylandi => "badge bg-success",
-                                QuoteStatus.Reddedildi => "badge bg-danger",
-                                _ => "badge bg-info"
+                                QuoteStatus.Taslak => "badge rounded-pill bg-secondary text-light",
+                 
+                                QuoteStatus.YoneticiOnayBekliyor => "badge rounded-pill bg-info text-dark",
+                                QuoteStatus.MusteriOnayiBekliyor => "badge rounded-pill bg-primary",
+                                QuoteStatus.Onaylandi => "badge rounded-pill bg-success",
+                                QuoteStatus.Reddedildi => "badge rounded-pill bg-danger",
+                                _ => "badge rounded-pill bg-light text-dark border"
                             };
                         }
-                        <span class="@badgeClass">@item.Durum.ToString()</span>
+                        <span class="@badgeClass" style="font-size: 0.8em;">@item.Durum.ToString().Replace("Bekliyor", " Bkl.").Replace("Yonetici", "Ynt.")</span>
                     </td>
-                    <td>@item.TeklifOlusturulmaTarihi.ToShortDateString()</td>
-                    <td>
-                        @* Detaylar ve Ürün Ekleme (Sepet) *@
 
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Detay</a>
-                        @if (User.IsInRole("Admin") || User.IsInRole("SatisElemani"))
-                        {
-                            <a asp-controller="QuoteItem" asp-action="Index" asp-route-quoteId="@item.Id" class="btn btn-sm btn-primary">Ürünler</a>
-                        }
+                    @* 6. Tarih *@
+                    <td><small>@item.TeklifOlusturulmaTarihi.ToShortDateString()</small></td>
 
-                        @if ((item.Durum != QuoteStatus.Onaylandi && User.IsInRole("Admin")) || item.Durum == QuoteStatus.Taslak)
-                        {
-                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;"
-                                  onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i> Sil
-                                </button>
-                            </form>
-                        }
+                    @* 7. İşlemler Sütunu (Tüm mantık Dropdown'a taşındı) *@
+                    <td class="text-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots"></i> İşlemler
+                            </button>
+                            <ul class="dropdown-menu">
+                                @* 1. Detay Her Zaman Var *@
+                                <li><a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item"><i class="bi bi-info-circle"></i> Detayları Görüntüle</a></li>
 
+                                @* 2. Ürünler (Admin/Satış Elemanı) *@
+                                @if (User.IsInRole("Admin") || User.IsInRole("SatisElemani"))
+                                {
+                                    <li><a asp-controller="QuoteItem" asp-action="Index" asp-route-quoteId="@item.Id" class="dropdown-item"><i class="bi bi-box-seam"></i> Ürün/Hizmet Yönetimi</a></li>
+                                }
 
+                                <li><hr class="dropdown-divider" /></li>
 
-                        @* Taslak ise Onaya Gönderme Butonu *@
-                        @if (item.Durum == QuoteStatus.Taslak)
-                        {
-                            <form asp-action="SubmitForApproval" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Teklifi onaya göndermek istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-success">Onaya Gönder</button>
-                            </form>
-                        }
+                                @* --- Dinamik Durum ve Yetki İşlemleri --- *@
 
-                        @if (item.Durum == QuoteStatus.YoneticiOnayBekliyor && User.IsInRole("Admin"))
-                        {
-                            <form asp-action="Approve" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi ONAYLAMAK istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-success">ONAYLA</button>
-                            </form>
-                            <form asp-action="Revize" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi ONAYLAMAK istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-success">Revizeye Gönder</button>
-                            </form>
-                            <form asp-action="Reject" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi REDDETMEK istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-danger">REDDET</button>
-                            </form>
-                        }
+                                @* TASLAK İken Yapılabilen İşlemler (Onaya Gönder, Silme) *@
+                                @if (item.Durum == QuoteStatus.Taslak)
+                                {
+                                    @* Onaya Gönder *@
+                                    <li>
+                                        <form asp-action="SubmitForApproval" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Teklifi onaya göndermek istediğinizden emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-success"><i class="bi bi-send"></i> Onaya Gönder</button>
+                                        </form>
+                                    </li>
 
-                        @if (item.Durum == QuoteStatus.MusteriOnayiBekliyor && User.IsInRole("FirmaKullanicisi"))
-                        {
-                            <form asp-action="MusteriOnay" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu üi ONAYLAMAK istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-success">ONAYLA</button>
-                            </form>
-                            <form asp-action="MusteriReject" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Bu teklifi REDDETMEK istediğinizden emin misiniz?');">
-                                <button type="submit" class="btn btn-sm btn-danger">REDDET</button>
-                            </form>
-                        }
+                                    @* Silme *@
+                                    <li>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash"></i> Sil</button>
+                                        </form>
+                                    </li>
+                                }
 
+                                @* YÖNETİCİ ONAY BEKLİYOR İken Yapılabilen İşlemler (Admin) *@
+                                @if (item.Durum == QuoteStatus.YoneticiOnayBekliyor && User.IsInRole("Admin"))
+                                {
+                                    @* ONAYLA *@
+                                    <li>
+                                        <form asp-action="Approve" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu teklifi ONAYLAMAK istediğinizden emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-success"><i class="bi bi-check-circle"></i> ONAYLA</button>
+                                        </form>
+                                    </li>
+                                    @* Revizeye Gönder *@
+                                    <li>
+                                        <form asp-action="Revize" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu teklifi revizeye göndermek istediğinizden emin misiniz?');">
+                                            <button type="submit" class="dropdown-item"><i class="bi bi-pencil-square"></i> Revizeye Gönder</button>
+                                        </form>
+                                    </li>
+                                    @* REDDET *@
+                                    <li>
+                                        <form asp-action="Reject" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu teklifi REDDETMEK istediğinizden emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-x-circle"></i> REDDET</button>
+                                        </form>
+                                    </li>
+                                }
+
+                                @* MÜŞTERİ ONAYI BEKLİYOR İken Yapılabilen İşlemler (FirmaKullanicisi) *@
+                                @if (item.Durum == QuoteStatus.MusteriOnayiBekliyor && User.IsInRole("FirmaKullanicisi"))
+                                {
+                                    @* ONAYLA *@
+                                    <li>
+                                        <form asp-action="MusteriOnay" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu teklifi ONAYLAMAK istediğinizden emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-success"><i class="bi bi-check-circle"></i> ONAYLA</button>
+                                        </form>
+                                    </li>
+                                    @* REDDET *@
+                                    <li>
+                                        <form asp-action="MusteriReject" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu teklifi REDDETMEK istediğinizden emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-x-circle"></i> REDDET</button>
+                                        </form>
+                                    </li>
+                                }
+
+                                @* Onaylanmamışsa ve Admin ise (Taslak Dışında Silme Hakkı) *@
+                                @if (item.Durum != QuoteStatus.Onaylandi && item.Durum != QuoteStatus.Taslak && User.IsInRole("Admin"))
+                                {
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Teklifi silmek istediğinize emin misiniz?');">
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-trash"></i> Sil (Admin)</button>
+                                        </form>
+                                    </li>
+                                }
+
+                            </ul>
+                        </div>
                     </td>
                 </tr>
             }

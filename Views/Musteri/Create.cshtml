@@ -13,11 +13,18 @@
             </h2>
             <p class="text-muted mb-0">Sisteme yeni bir firma kartı tanımlayın.</p>
         </div>
+
         <div class="col-md-6 d-flex justify-content-md-end mt-3 mt-md-0">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 bg-white shadow-sm px-3 py-2 rounded-pill">
-                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none"><i class="bi bi-house-door"></i></a></li>
-                    <li class="breadcrumb-item"><a asp-controller="Musteri" asp-action="ana" class="text-decoration-none">Müşteriler</a></li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Home" asp-action="Index" class="text-decoration-none">
+                            <i class="bi bi-house-door"></i>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Musteri" asp-action="ana" class="text-decoration-none">Müşteriler</a>
+                    </li>
                     <li class="breadcrumb-item active" aria-current="page">Yeni Kayıt</li>
                 </ol>
             </nav>
@@ -42,7 +49,9 @@
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <div class="col-12 mb-2">
-                            <h6 class="text-uppercase text-muted fw-bold border-bottom pb-2"><i class="bi bi-building me-1"></i> Firma & İletişim Bilgileri</h6>
+                            <h6 class="text-uppercase text-muted fw-bold border-bottom pb-2">
+                                <i class="bi bi-building me-1"></i> Firma & İletişim Bilgileri
+                            </h6>
                         </div>
 
                         <div class="col-md-12">
@@ -53,6 +62,27 @@
                             </div>
                         </div>
 
+                        @* --- YENİ EKLENEN KISIM BAŞLANGICI --- *@
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="VergiNo" class="form-control" placeholder="Vergi No / TCKN" maxlength="11" />
+                                <label asp-for="VergiNo">Vergi No / TCKN</label>
+                                <span asp-validation-for="VergiNo" class="text-danger small"></span>
+                                <small class="text-muted ms-1" style="font-size: 0.75rem;">
+                                    <i class="bi bi-info-circle"></i> E-Fatura kontrolü için gereklidir.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="VergiDairesi" class="form-control" placeholder="Vergi Dairesi" />
+                                <label asp-for="VergiDairesi">Vergi Dairesi</label>
+                                <span asp-validation-for="VergiDairesi" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        @* --- YENİ EKLENEN KISIM BİTİŞİ --- *@
+
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Email" type="email" class="form-control" placeholder="Email" />
@@ -60,6 +90,7 @@
                                 <span asp-validation-for="Email" class="text-danger small"></span>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Telefon" class="form-control" placeholder="Telefon" />
@@ -75,6 +106,7 @@
                                 <span asp-validation-for="Il" class="text-danger small"></span>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input asp-for="Ilce" class="form-control" placeholder="İlçe" />
@@ -101,17 +133,19 @@
                         <div class="col-12 mt-5">
                             <div class="card border-primary border-opacity-25 bg-light">
                                 <div class="card-header bg-primary bg-opacity-10 text-primary border-bottom border-primary border-opacity-25">
-                                    <h6 class="mb-0 fw-bold"><i class="bi bi-person-gear"></i> Yetkili Kullanıcı İşlemleri</h6>
+                                    <h6 class="mb-0 fw-bold">
+                                        <i class="bi bi-person-gear"></i> Yetkili Kullanıcı İşlemleri
+                                    </h6>
                                 </div>
+
                                 <div class="card-body">
 
                                     <div class="mb-4 d-flex gap-3 flex-wrap">
-                                        @*
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="yetkiliSecim" id="optYok" value="yok" checked onchange="toggleSections()">
-                                            <label class="form-check-label" for="optYok">Yetkili Ekleme (Sadece Firma)</label>
-                                        </div>
-                                        *@
+
+                                        @* <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="yetkiliSecim" id="optYok" value="yok" checked onchange="toggleSections()">
+                                                <label class="form-check-label" for="optYok">Yetkili Ekleme (Sadece Firma)</label>
+                                            </div> *@
 
                                         @if (ViewBag.BostakiYetkililer != null)
                                         {
@@ -134,7 +168,9 @@
                                         <select asp-for="SecilenVarolanKullaniciId" class="form-select" asp-items="ViewBag.BostakiYetkililer">
                                             <option value="">-- Bir Kullanıcı Seçiniz --</option>
                                         </select>
-                                        <small class="text-muted"><i class="bi bi-info-circle"></i> Burada sadece rolü 'Firma Kullanıcısı' olan ve henüz bir firması olmayanlar listelenir.</small>
+                                        <small class="text-muted">
+                                            <i class="bi bi-info-circle"></i> Burada sadece rolü 'Firma Kullanıcısı' olan ve henüz bir firması olmayanlar listelenir.
+                                        </small>
                                     </div>
 
                                     <div id="sectionYeni" style="display:none;" class="row g-3 mt-2 animate__animated animate__fadeIn">
@@ -144,18 +180,21 @@
                                                 <label asp-for="YetkiliIsim">Yetkili Adı</label>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="form-floating">
                                                 <input asp-for="YetkiliSoyisim" class="form-control" placeholder="Soyisim" />
                                                 <label asp-for="YetkiliSoyisim">Yetkili Soyadı</label>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="form-floating">
                                                 <input asp-for="YetkiliEmail" class="form-control" placeholder="Email" autocomplete="off" />
                                                 <label asp-for="YetkiliEmail" class="fw-bold text-success">Giriş Email (Kullanıcı Adı)</label>
                                             </div>
                                         </div>
+
                                         <div class="col-md-6">
                                             <div class="form-floating">
                                                 <input asp-for="YetkiliSifre" type="password" class="form-control" placeholder="Şifre" autocomplete="new-password" />
@@ -181,9 +220,11 @@
 
                     </form>
                 </div>
+
             </div>
         </div>
     </div>
+
 </div>
 
 @section Scripts {
@@ -196,21 +237,16 @@
             var divVarolan = document.getElementById("sectionVarolan");
             var divYeni = document.getElementById("sectionYeni");
 
-            // Hepsini gizle önce
             divVarolan.style.display = "none";
             divYeni.style.display = "none";
 
-            // Varolan Seçildiyse (Eğer element varsa kontrol et)
             if (optVarolan && optVarolan.checked) {
                 divVarolan.style.display = "block";
-                // Yeni formdaki verileri temizle (Çakışma olmasın)
                 document.getElementById("YetkiliEmail").value = "";
                 document.getElementById("YetkiliSifre").value = "";
             }
-            // Yeni Oluştur Seçildiyse
             else if (optYeni.checked) {
-                divYeni.style.display = "flex"; // row yapısını korumak için flex
-                // Dropdown seçimini sıfırla
+                divYeni.style.display = "flex";
                 var drop = document.getElementById("SecilenVarolanKullaniciId");
                 if (drop) drop.value = "";
             }

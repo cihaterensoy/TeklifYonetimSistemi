@@ -11,6 +11,7 @@ using System.Data;
 using System.Runtime.Intrinsics.X86;
 using System.Threading.Tasks;
 using TeklifYonetimSistemi.Services;
+using TeklifYonetimSistemi.Models.ViewModels;
 
 [Authorize]
 public class QuoteController : Controller
@@ -99,6 +100,7 @@ public class QuoteController : Controller
 
     }
     [HttpGet]
+    [Authorize(Roles = "Admin,SatisElemani")]
     public async Task<IActionResult> Create(int projectId)
     {
         
@@ -134,6 +136,7 @@ public class QuoteController : Controller
         return View(yeniTeklif);
     }
     [HttpPost]
+    [Authorize(Roles = "Admin,SatisElemani")]
     public async Task<IActionResult> Create(QuoteModel model)
     {
         var user = await _userManager.GetUserAsync(User);
@@ -176,7 +179,7 @@ public class QuoteController : Controller
         //var quotes = await _context.Quotes.Include(p => p.Customer).FirstOrDefaultAsync(q => q.Id == projectId);
         // var quotes= await _context.Quotes.Include(q => q.Project).ThenInclude(p => p.Customer).Include(qi=>qi).FirstOrDefaultAsync(qi => qi.Id == id);
         //var item = await _context.QuoteItems.Include(qi => qi.Quote).FirstOrDefaultAsync(qi => qi.Id == itemId);
-        var quotes = await _context.Quotes
+        var quote = await _context.Quotes
         .Include(q => q.QuoteItems)            // 1️⃣ Quote tablosuna bağlı tüm QuoteItems’leri getir
         .Include(q => q.Project)               // 2️⃣ Quote tablosuna bağlı Project’i getir
         .ThenInclude(p => p.Customer)          // 3️⃣ O Project’in bağlı olduğu Customer’ı da getir
@@ -187,11 +190,30 @@ public class QuoteController : Controller
         //Ama bana sadece teklifi getirme; yanına bu teklifin Ürün Kalemlerini, bağlı olduğu Projesini ve o projenin Müşterisini de ekleyerek (doldurarak) getir.
         //Include: Ana tablonun doğrudan bağlı olduğu veriyi çeker. (Oğul/Kız)
         //ThenInclude: Az önce çektiğin verinin içindeki veriyi çeker. (Torun)
-        if (quotes == null)
+        if (quote == null)
         {
             return NotFound();
         }
-        return View(quotes);
+        //teklife ait mesajları çekiyoruz
+        var gecmisMesajlar = await _context.TeklifMesajlar
+            .Where(m => m.TeklifId == id)
+            .OrderBy(m => m.GonderilmeTarihi)
+            .ToListAsync();
+        //Mesajı atan kullanıcıların ID'lerini toplama (tekrar edenleri filtreleyerek)
+        var gonderenUserIds = gecmisMesajlar.Select(m => m.GonderenUserId) //mesajların gönderen userıd alanını alıyoruz
+            .Distinct()//Aynı kullanıcıdan birden fazla mesaj gelmiş olabilir. Distinct() ile tekrar eden ID’leri kaldırıyoruz. Örnek: [3, 5, 7]
+            .ToList();//Sonucu List<int> tipinde bir listeye çeviriyoruz.
+
+        var kullanicilar = await _context.Users
+            .Where(u => gonderenUserIds.Contains(u.Id)) //gonderenUserIds listesindeki ID’lere sahip kullanıcıları filtreler. Yani sadece mesaj gönderen kullanıcılar alınır.
+            .ToDictionaryAsync(u => u.Id, u => u.UserName);
+        var viewModel = new TeklifDetayViewModel
+        {
+            Teklif = quote,                  // Teklif bilgisi
+            GecmisMesajlar = gecmisMesajlar, // Mesajlar
+            KullaniciAdlari = kullanicilar   // ID → Kullanıcı adı eşlemesi
+        };
+        return View(viewModel);
     }
     [HttpPost]
     [Authorize(Roles = "Admin,SatisElemani")]
@@ -240,21 +262,61 @@ public class QuoteController : Controller
     [HttpPost]
     [Authorize(Roles = "Admin")] // Sadece Admin rolündekiler onaylayabilir.
     public async Task<IActionResult> Approve(int id)
-
     {
-        var quote = await _context.Quotes.FirstOrDefaultAsync(q=>q.Id==id);
-        if (quote == null) return NotFound();
-
-        if(quote.Durum != QuoteStatus.YoneticiOnayBekliyor)
+        //ya hepsini değiştir ya da hiç değiştirme
+        //veritabanında bir işlemi bloğu başlatıyor. bu blok içindeki değişiklikleri ya tamamen uygulaancak ya da hiç uygulanmayacak eğer bir sorun olursa tüm değişiklikler geri alanacak
+        using var transastion = await _context.Database.BeginTransactionAsync();
+        try
         {
-            TempData["HataMesaji"] = "Teklif sadece 'Onay Bekliyor' durumundayken onaylanabilir";
-            return RedirectToAction("Index");
+            var quote = await _context.Quotes
+               .Include(q => q.QuoteItems)
+               .ThenInclude(qi => qi.Product)
+               .FirstOrDefaultAsync(q => q.Id == id);
+            //quoteItems teklifin kalemleri
+            //product her kalemin detaylı bilgisi
+            //verilen id ile eşlesen teklifi getirir
+            if (quote == null) return NotFound();
 
+
+            if (quote.Durum != QuoteStatus.YoneticiOnayBekliyor)
+            {
+                TempData["HataMesaji"] = "Teklif sadece 'Onay Bekliyor' durumundayken onaylanabilir";
+                return RedirectToAction("Index");
+
+            }
+
+            foreach (var item in quote.QuoteItems)
+            {
+                if (item.Product != null && item.Product.StokTakibiYapilsinMi)
+                {
+                    if (item.Miktar > item.Product.StokMiktari)
+                    {
+                        TempData["HataMesaji"] = $"Yetersiz Stok! {item.UrunAdi} için elde {item.Product.StokMiktari} var, teklifte {item.Miktar} isteniyor.";
+                        return RedirectToAction("Index");
+
+                    }
+                }
+            }
+            foreach (var item in quote.QuoteItems)
+            {
+                if (item.Product != null && item.Product.StokTakibiYapilsinMi)
+                {
+                    item.Product.StokMiktari -= item.Miktar;
+                }
+            }
+
+            quote.Durum = QuoteStatus.MusteriOnayiBekliyor;
+            await _context.SaveChangesAsync();
+            TempData["BasariMesaji"] = $"Teklif ({quote.TeklifNo}) başarıyla ONAYLANDI, müşteriye gönderildi ve stoklar rezerve edildi.";
+            return RedirectToAction("Index");
         }
-        quote.Durum = QuoteStatus.MusteriOnayiBekliyor;
-        await _context.SaveChangesAsync();
-        TempData["BasariMesaji"] = $"Teklif ({quote.TeklifNo}) başarıyla ONAYLANDI ve müşteriye gönderime hazır.";
-        return RedirectToAction("Index");
+        catch(Exception ex)
+        {   
+            await transastion.RollbackAsync();
+            //başlattığımız transasction'ı geri al ve bu işlem sırasında yapılan tüm değişiklikleri iptal et
+            TempData["HataMesaji"] = "Bir hata oluştu: " + ex.Message;
+            return RedirectToAction("Index");
+        }
     }
     [HttpPost]
     [Authorize(Roles = "Admin")] // Sadece Admin rolündekiler onaylayabilir.
@@ -316,7 +378,7 @@ public class QuoteController : Controller
         //
         //mail gönderme//
         /*
-         * //sürekli mail atmasın diye kapattım
+         //sürekli mail atmasın diye kapattım
         await _emailService.SendEmailWithAttachmentAsync(
             toEmail: quote.Project.Customer.Email,
             subject: $"{quote.TeklifAdi} Teklif Onayı",
@@ -334,13 +396,23 @@ public class QuoteController : Controller
     [Authorize(Roles = "Admin,FirmaKullanicisi")]// Sadece Admin rolündekiler reddeebilir.
     public async Task<IActionResult> MusteriReject(int id)
     {
-        var quote = await _context.Quotes.FirstOrDefaultAsync(q => q.Id == id);
+        var quote = await _context.Quotes.Include(q=>q.QuoteItems).ThenInclude(qi=>qi.Product).FirstOrDefaultAsync(q => q.Id == id);
         if (quote == null) return NotFound();
         if (quote.Durum != QuoteStatus.MusteriOnayiBekliyor)
         {
             TempData["HataMesaji"] = "Teklif sadece 'Onay Bekliyor' durumundayken reddedebilir";
+            //
+            //tempdata ve viewbag arasındaki fark nedir veya fark var mı bunu araştır
+            //
             return RedirectToAction("Index");
 
+        }
+        foreach(var item in quote.QuoteItems)
+        {
+            if(item.Product != null && item.Product.StokTakibiYapilsinMi)
+            {
+                item.Product.StokMiktari += item.Miktar;
+            }
         }
         quote.Durum = QuoteStatus.Reddedildi;
         await _context.SaveChangesAsync();

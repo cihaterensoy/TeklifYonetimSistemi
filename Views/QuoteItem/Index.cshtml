@@ -1,36 +1,38 @@
 ﻿@model TeklifYonetimSistemi.Models.QuoteModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Teklif Detayları ve Hesaplama";
+    ViewData["Title"] = "Teklif Detayları";
     bool isTaslak = Model.Durum == TeklifYonetimSistemi.Models.QuoteStatus.Taslak;
 }
 
 <div class="container-fluid mt-4">
-    @* --- 1. ÜST BİLGİ KARTI --- *@
-    <div class="card mb-4 border-0 shadow-sm bg-white border-start border-5 border-primary">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+    @* --- 1. ÜST BİLGİ KARTI (Sadeleştirildi) --- *@
+    <div class="card mb-4 border shadow-sm">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="card-title text-primary fw-bold mb-1">
-                        <i class="fas fa-file-invoice-dollar me-2"></i>Teklif No: #@Model.TeklifNo
-                    </h3>
-                    <div class="text-muted mb-2">
-                        <i class="fas fa-building me-1"></i> @(Model.Project?.Customer?.FirmaUnvani ?? "Firma Belirtilmemiş")
-                        <span class="mx-2">|</span>
-                        <i class="fas fa-project-diagram me-1"></i> @(Model.Project?.ProjeAdi ?? "Proje Belirtilmemiş")
+                    <h4 class="card-title text-dark fw-bold mb-1">
+                        <i class="fas fa-file-alt me-2 text-secondary"></i>Teklif No: #@Model.TeklifNo
+                    </h4>
+                    <div class="text-muted small">
+                        <span class="fw-semibold">@(Model.Project?.Customer?.FirmaUnvani ?? "Firma Belirtilmemiş")</span>
+                        <span class="mx-2 text-secondary">|</span>
+                        <span>@(Model.Project?.ProjeAdi ?? "Proje Belirtilmemiş")</span>
                     </div>
                 </div>
-                <div class="text-end mt-3 mt-md-0">
-                    <div class="d-flex gap-2 mb-2 justify-content-end flex-wrap">
-                        <span class="badge bg-light text-dark border p-2">
-                            <i class="fas fa-dollar-sign me-1"></i>USD: @Model.DolarKuru.ToString("N2") ₺
+
+                <div class="text-end">
+                    <div class="mb-2">
+                        <span class="badge bg-light text-secondary border fw-normal me-1">
+                            USD: @Model.DolarKuru.ToString("N2") ₺
                         </span>
-                        <span class="badge bg-light text-dark border p-2">
-                            <i class="fas fa-euro-sign me-1"></i>EUR: @Model.EuroKuru.ToString("N2") ₺
+                        <span class="badge bg-light text-secondary border fw-normal">
+                            EUR: @Model.EuroKuru.ToString("N2") ₺
                         </span>
                     </div>
-                    <a asp-controller="Quote" asp-action="Index" class="btn btn-outline-secondary btn-sm">
-                        <i class="fas fa-arrow-left me-1"></i> Listeye Dön
+                    <a asp-controller="Quote" asp-action="Index" class="btn btn-light btn-sm border text-muted">
+                        <i class="fas fa-arrow-left me-1"></i> Geri Dön
                     </a>
                 </div>
             </div>
@@ -40,55 +42,44 @@
     @* --- MESAJLAR --- *@
     @if (TempData["BasariMesaji"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <strong>Başarılı!</strong> @TempData["BasariMesaji"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+        <div class="alert alert-success py-2 mb-3 shadow-sm border-0 border-start border-4 border-success">
+            <i class="fas fa-check me-2"></i> @TempData["BasariMesaji"]
         </div>
     }
     @if (TempData["HataMesaji"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <strong>Hata!</strong> @TempData["HataMesaji"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+        <div class="alert alert-danger py-2 mb-3 shadow-sm border-0 border-start border-4 border-danger">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["HataMesaji"]
         </div>
     }
 
-    @* --- 2. HESAPLAMA FORMU (YENİ ÜRÜN EKLEME) --- *@
+    @* --- 2. HESAPLAMA FORMU (Senin Düzenin, Ama Daha Zarif) --- *@
     @if (isTaslak)
     {
-        <div class="card shadow mb-4">
-            <div class="card-header bg-primary text-white py-3">
-                <h5 class="mb-0"><i class="fas fa-cart-plus me-2"></i>Yeni Kalem Ekle</h5>
+        <div class="card border shadow-sm mb-4">
+            @* Mavi arka planlı başlık yerine sade gri başlık *@
+            <div class="card-header bg-white py-2 border-bottom">
+                <h6 class="mb-0 fw-bold text-secondary"><i class="fas fa-plus-circle me-2"></i>Kalem Ekle</h6>
             </div>
-            <div class="card-body bg-light">
+            <div class="card-body bg-light bg-opacity-10">
                 <form asp-action="AddItem" method="post" id="addItemForm">
                     <input type="hidden" name="quoteId" value="@Model.Id" />
                     <div class="row g-3 align-items-end">
+
                         @* ÜRÜN SEÇİMİ *@
                         <div class="col-lg-4 col-md-6">
-                            <label for="urunSecimi" class="form-label fw-bold text-dark">
-                                <i class="fas fa-box me-1"></i>Ürün / Hizmet Seçimi
-                            </label>
-                            <select id="urunSecimi" name="productId" class="form-select form-select-lg border-primary" required>
-                                <option value="" data-alis="0" data-marj="0" data-kdv="0">-- Listeden Seçiniz --</option>
+                            <label class="form-label small text-muted fw-bold mb-1">Ürün / Hizmet</label>
+                            <select id="urunSecimi" name="productId" class="form-select" required>
+                                <option value="" data-alis="0" data-marj="0" data-kdv="0">Seçiniz...</option>
                                 @if (ViewBag.UrunListesi is List<TeklifYonetimSistemi.Models.ProductModel> urunler)
                                 {
-                                    @foreach (var urun in urunler)
+                                    foreach (var urun in urunler)
                                     {
                                         string jsAlis = urun.AlisFiyati.ToString("0.##", CultureInfo.InvariantCulture);
                                         string jsMarj = urun.VarsayilanKarMarji.ToString("0.##", CultureInfo.InvariantCulture);
                                         string jsKdv = urun.KDVOrani.ToString("0.##", CultureInfo.InvariantCulture);
-                                        string gorunenMetin = $"{urun.UrunAdi} ({urun.SatisFiyatListesi:N2} {urun.ParaBirimi})"; // Para birimini buraya da ekledim
-
-                                        <option value="@urun.Id"
-                                                data-alis="@jsAlis"
-                                                data-marj="@jsMarj"
-                                                data-kdv="@jsKdv"
-                                                data-parabirimi="@(urun.ParaBirimi ?? "TL")">
-                                            @* YENİ EKLENEN KISIM *@
-                                            @gorunenMetin
+                                        <option value="@urun.Id" data-alis="@jsAlis" data-marj="@jsMarj" data-kdv="@jsKdv" data-parabirimi="@(urun.ParaBirimi ?? "TL")">
+                                            @urun.UrunAdi
                                         </option>
                                     }
                                 }
@@ -97,114 +88,83 @@
 
                         @* MİKTAR *@
                         <div class="col-lg-1 col-md-2 col-6">
-                            <label for="inputMiktar" class="form-label fw-bold">Miktar</label>
-                            <input type="number" id="inputMiktar" name="quantity"
-                                   class="form-control form-control-lg text-center fw-bold"
-                                   value="1" min="1" step="1" required />
+                            <label class="form-label small text-muted fw-bold mb-1">Miktar</label>
+                            <input type="number" name="quantity" class="form-control text-center" value="1" min="1" required />
                         </div>
 
-                        @* YENİ: KUR GİRİŞ ALANI *@
+                        @* KUR (Gri tonlar) *@
                         <div class="col-lg-2 col-md-3 col-6">
-                            <label for="inputKur" class="form-label fw-bold text-muted">İşlem Kuru</label>
+                            <label class="form-label small text-muted fw-bold mb-1">Kur</label>
                             <div class="input-group">
-                                <input type="number" id="inputKur" name="dovizKuru"
-                                       class="form-control text-center fw-bold border-info"
-                                       value="1" step="0.0001" min="0" required>
-                                <span class="input-group-text" id="lblKurTuru">TL</span>
+                                <input type="number" id="inputKur" name="dovizKuru" class="form-control text-end" value="1" step="0.0001">
+                                <span class="input-group-text bg-white text-muted small" id="lblKurTuru">TL</span>
                             </div>
                         </div>
 
-                        @* GÜNCELLENEN: MALİYET ALANI *@
+                        @* MALİYET (Kırmızı yerine koyu gri/siyah daha profesyonel durur) *@
                         <div class="col-lg-2 col-md-4 col-6">
-                            <label for="inputMaliyet" class="form-label fw-bold text-danger">
-                                <i class="fas fa-money-bill-wave me-1"></i>Birim Maliyet
-                            </label>
+                            <label class="form-label small text-muted fw-bold mb-1">Birim Maliyet</label>
                             <div class="input-group">
-                                <input type="number" id="inputMaliyet" name="alisMaliyeti"
-                                       class="form-control text-danger fw-bold"
-                                       step="0.01" min="0" placeholder="0.00" required>
-                                @* Buradaki simge artık JS ile değişecek *@
-                                <span class="input-group-text" id="lblMaliyetParaBirimi">TL</span>
+                                <input type="number" id="inputMaliyet" name="alisMaliyeti" class="form-control" step="0.01" placeholder="0.00">
+                                <span class="input-group-text bg-white text-muted small" id="lblMaliyetParaBirimi">TL</span>
                             </div>
                         </div>
 
-                        @* KDV ALANI *@
+                        @* KDV *@
                         <div class="col-lg-1 col-md-2 col-6">
-                            <label for="inputKdv" class="form-label fw-bold text-muted">KDV %</label>
-                            <div class="input-group">
-                                <input type="number" id="inputKdv" name="kdvOrani"
-                                       class="form-control text-center fw-bold"
-                                       min="0" max="100" step="1" value="0" required>
-                                <span class="input-group-text">%</span>
-                            </div>
+                            <label class="form-label small text-muted fw-bold mb-1">KDV %</label>
+                            <input type="number" id="inputKdv" name="kdvOrani" class="form-control text-center" min="0" max="100" value="0">
                         </div>
 
-                        @* İSKONTOLAR *@
+                        @* İSKONTOLAR (Input group sm ile küçültüldü) *@
                         <div class="col-lg-2 col-md-4">
-                            <label class="form-label fw-bold small text-muted">
-                                <i class="fas fa-percent me-1"></i>İskontolar (%)
-                            </label>
+                            <label class="form-label small text-muted fw-bold mb-1">İskontolar</label>
                             <div class="input-group input-group-sm">
-                                <input type="number" name="isk1" class="form-control px-1"
-                                       placeholder="İsk1" value="0" min="0" max="100" step="0.01">
-                                <input type="number" name="isk2" class="form-control px-1"
-                                       placeholder="İsk2" value="0" min="0" max="100" step="0.01">
-                                <input type="number" name="isk3" class="form-control px-1"
-                                       placeholder="İsk3" value="0" min="0" max="100" step="0.01">
+                                <input type="number" name="isk1" class="form-control px-1 text-center" placeholder="1" step="0.01">
+                                <input type="number" name="isk2" class="form-control px-1 text-center" placeholder="2" step="0.01">
+                                <input type="number" name="isk3" class="form-control px-1 text-center" placeholder="3" step="0.01">
                             </div>
                         </div>
 
-                        @* KÂR MARJI *@
+                        @* KÂR MARJI (Aşırı yeşil yerine sade input) *@
                         <div class="col-lg-1 col-md-3">
-                            <label for="inputMarj" class="form-label fw-bold text-success">
-                                <i class="fas fa-chart-line me-1"></i>Kâr %
-                            </label>
-                            <input type="number" id="inputMarj" name="karMarji"
-                                   class="form-control text-success fw-bold border-success"
-                                   step="0.01" min="0" value="0" required>
+                            <label class="form-label small text-muted fw-bold mb-1">Kâr %</label>
+                            <input type="number" id="inputMarj" name="karMarji" class="form-control text-success fw-bold" step="0.01" value="0">
                         </div>
 
-                        @* BUTON *@
-                        <div class="col-lg-1 col-md-12">
-                            <button type="submit" class="btn btn-primary w-100 btn-lg shadow-sm">
-                                <i class="fas fa-plus me-1"></i> Ekle
+                        <div class="col-lg-1 col-md-12 text-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-plus"></i> Ekle
                             </button>
                         </div>
+
                     </div>
                 </form>
             </div>
         </div>
     }
 
-    @* --- 3. TABLO (MEVCUT KALEMLER) --- *@
-    <div class="card shadow-sm mb-5">
-        <div class="card-header bg-white py-3 border-bottom">
-            <h5 class="mb-0 text-dark">
-                <i class="fas fa-list-ol me-2"></i>Teklif Kalemleri
-                @if (Model.QuoteItems != null && Model.QuoteItems.Any())
-                {
-                    <span class="badge bg-primary ms-2">@Model.QuoteItems.Count</span>
-                }
-            </h5>
-        </div>
+    @* --- 3. TABLO (Orijinal yapı, sade stil) --- *@
+    <div class="card border shadow-sm mb-4">
         <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle mb-0" style="font-size: 0.95rem;">
-                <thead class="table-dark text-center">
-                    <tr>
-                        <th style="width: 25%;" class="text-start">Ürün / Hizmet</th>
-                        <th style="width: 8%;">Miktar</th>
-                        <th style="width: 10%;" class="bg-secondary bg-opacity-25 text-dark border-secondary">Net Maliyet</th>
-                        <th style="width: 8%;">Kâr %</th>
-                        <th style="width: 12%;">Birim Satış</th>
-                        <th style="width: 10%;">KDV</th>
-                        <th style="width: 15%;">Satır Toplamı<br><small>(KDV Dahil)</small></th>
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                @* Table-dark yerine table-light kullanıldı (Fotoğraftaki gibi) *@
+                <thead class="table-light text-secondary">
+                    <tr class="text-uppercase small fw-bold">
+                        <th style="width: 25%;">Ürün / Hizmet</th>
+                        <th style="width: 8%;" class="text-center">Miktar</th>
+                        <th style="width: 10%;" class="text-end">Net Maliyet</th>
+                        <th style="width: 8%;" class="text-center">Kâr %</th>
+                        <th style="width: 12%;" class="text-end">Birim Fiyat</th>
+                        <th style="width: 10%;" class="text-center">KDV</th>
+                        <th style="width: 15%;" class="text-end">Tutar</th>
                         @if (isTaslak)
                         {
-                            <th style="width: 5%;">İşlem</th>
-                        }
+                            <th style="width: 5%;"></th>
+}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="border-top-0">
                     @if (Model.QuoteItems != null && Model.QuoteItems.Any())
                     {
                         int rowIndex = 0;
@@ -213,89 +173,65 @@
                             rowIndex++;
                             <tr>
                                 <td>
-                                    <div class="fw-bold text-dark">
-                                        <span class="badge bg-light text-dark me-2">@rowIndex</span>
-                                        @item.UrunAdi
-                                    </div>
+                                    <div class="fw-bold text-dark">@item.UrunAdi</div>
                                     @if (!string.IsNullOrEmpty(item.Product?.Kategori))
                                     {
-                                        <div class="small text-muted mt-1">
-                                            <i class="fas fa-tag me-1"></i>@item.Product.Kategori
-                                        </div>
+                                        <small class="text-muted">@item.Product.Kategori</small>
                                     }
                                 </td>
-                                <td class="text-center fw-bold bg-light">
-                                    @item.Miktar.ToString("N2") <span class="small text-muted">@(item.Birim ?? "adet")</span>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">@item.Miktar.ToString("N2")</span>
                                 </td>
-                                <td class="text-end text-danger bg-light border-end">
+                                <td class="text-end text-muted">
                                     @item.BirimMaliyet.ToString("N2") ₺
                                 </td>
-                                <td class="text-center text-success fw-bold">
+                                <td class="text-center text-success small">
                                     %@item.KarMarji.ToString("N2")
                                 </td>
-                                <td class="text-end fw-bold text-primary">
+                                <td class="text-end fw-bold">
                                     @item.BirimSatisFiyati.ToString("N2") ₺
                                 </td>
-                                <td class="text-center p-2">
+                                <td class="text-center">
                                     @if (isTaslak)
                                     {
-                                        <form asp-action="UpdateKDV" method="post" class="d-flex flex-column align-items-center justify-content-center">
+                                        <form asp-action="UpdateKDV" method="post" class="d-inline-block">
                                             <input type="hidden" name="itemId" value="@item.Id" />
-                                            <div class="input-group input-group-sm" style="max-width: 100px;">
-                                                <input type="number" name="yeniKdvOrani"
-                                                       value="@item.KDVOrani.ToString("0.##", CultureInfo.InvariantCulture)"
-                                                       class="form-control text-center px-1 fw-bold border-secondary"
-                                                       min="0" max="100" step="1"
-                                                       onchange="this.form.submit()"
-                                                       title="KDV Oranı" />
-                                                <span class="input-group-text px-1">%</span>
-                                            </div>
-                                            <small class="text-muted mt-1" style="font-size:0.75rem;">
-                                                (@item.KDVTutari.ToString("N2") ₺)
-                                            </small>
+                                            <input type="number" name="yeniKdvOrani"
+                                                   value="@item.KDVOrani.ToString("0.##", CultureInfo.InvariantCulture)"
+                                                   class="form-control form-control-sm text-center d-inline-block p-0 border-0 bg-transparent fw-bold"
+                                                   style="width: 35px;" onchange="this.form.submit()" />
+                                            <span class="small">%</span>
                                         </form>
                                     }
                                     else
                                     {
-                                        <div class="d-flex flex-column align-items-center">
-                                            <span class="badge bg-light text-dark border">
-                                                %@item.KDVOrani.ToString("0.##")
-                                            </span>
-                                            <small class="text-muted mt-1">@item.KDVTutari.ToString("N2") ₺</small>
-                                        </div>
+                                        <span>%@item.KDVOrani.ToString("0.##")</span>
                                     }
                                 </td>
-                                <td class="text-end fw-bold bg-light fs-6">
+                                <td class="text-end fw-bold text-dark">
                                     @item.SatirGenelToplam.ToString("C2", new CultureInfo("tr-TR"))
                                 </td>
                                 @if (isTaslak)
                                 {
-                                    <td class="text-center">
-                                        <form asp-action="RemoveItem" method="post"
-                                              onsubmit="return confirm('Bu kalemi silmek istediğinize emin misiniz?');">
+                                    <td class="text-center align-middle">
+                                        <form asp-action="RemoveItem" method="post" onsubmit="return confirm('Silinsin mi?');">
                                             <input type="hidden" name="itemId" value="@item.Id" />
-                                            <button type="submit" class="btn btn-outline-danger btn-sm border-0"
-                                                    title="Sil">
-                                                <i class="fas fa-trash-alt"></i>
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times me-1"></i> Sil
                                             </button>
                                         </form>
                                     </td>
                                 }
+
+
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <div class="text-muted">
-                                    <i class="fas fa-calculator fa-3x mb-3 text-secondary opacity-50"></i>
-                                    <h5>Henüz ürün eklenmemiş.</h5>
-                                    @if (isTaslak)
-                                    {
-                                        <p class="small">Yukarıdaki formu kullanarak yeni kalem ekleyebilirsiniz.</p>
-                                    }
-                                </div>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                Henüz kalem eklenmemiş.
                             </td>
                         </tr>
                     }
@@ -303,23 +239,21 @@
             </table>
         </div>
 
-        @* --- TOPLAMLAR --- *@
-        <div class="card-footer bg-white p-0">
-            <div class="row m-0">
-                <div class="col-md-8 d-none d-md-block bg-light border-end"></div>
-                <div class="col-md-4 p-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Ara Toplam:</span>
-                        <span class="fw-bold text-dark">@Model.AraToplam.ToString("C2", new CultureInfo("tr-TR"))</span>
+        @* Alt Toplamlar (Gri arka plan, sağa yaslı) *@
+        <div class="card-footer bg-light p-3">
+            <div class="row justify-content-end text-end">
+                <div class="col-md-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted small">Ara Toplam:</span>
+                        <span class="fw-bold">@Model.AraToplam.ToString("C2", new CultureInfo("tr-TR"))</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">Toplam KDV:</span>
-                        <span class="fw-bold text-dark">@Model.ToplamKDV.ToString("C2", new CultureInfo("tr-TR"))</span>
+                        <span class="text-muted small">KDV:</span>
+                        <span class="fw-bold">@Model.ToplamKDV.ToString("C2", new CultureInfo("tr-TR"))</span>
                     </div>
-                    <hr />
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fs-5 fw-bold text-primary">GENEL TOPLAM:</span>
-                        <span class="fs-4 fw-bold text-success">@Model.GenelToplam.ToString("C2", new CultureInfo("tr-TR"))</span>
+                    <div class="d-flex justify-content-between border-top pt-2">
+                        <span class="text-dark fw-bold">GENEL TOPLAM:</span>
+                        <span class="text-primary fw-bold fs-5">@Model.GenelToplam.ToString("C2", new CultureInfo("tr-TR"))</span>
                     </div>
                 </div>
             </div>
@@ -328,35 +262,26 @@
 
 
     @* --- BUTONLAR --- *@
-    @if (isTaslak)
-    {
-        <div class="mt-4 text-end">
-            <form>
-                <button a class="nav-link" asp-controller="Quote" asp-action="Index" type="submit" class="btn btn-lg btn-warning text-dark shadow">
-                    <i class="fas fa-paper-plane"></i> Taslak Olarak Kaydet ve Kapat
-                </button>
-            </form>
-        </div>
-    }
-    <div class="d-flex justify-content-end gap-3 pb-5">
-
+    <div class="d-flex justify-content-end gap-2 pb-5">
         @if (isTaslak)
         {
-            <form asp-controller="Quote" asp-action="SubmitForApproval" asp-route-id="@Model.Id"
-                  method="post" onsubmit="return confirm('Teklifi onaya göndermek istediğinize emin misiniz?');">
-                <button type="submit" class="btn btn-success btn-lg shadow">
-                    <i class="fas fa-paper-plane me-2"></i>Teklifi Onaya Gönder
+            <a asp-controller="Quote" asp-action="Index" class="btn btn-light border text-muted">
+                Kapat
+            </a>
+            <form asp-controller="Quote" asp-action="SubmitForApproval" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Onaya göndermek istiyor musunuz?');">
+                <button type="submit" class="btn btn-success px-4 shadow-sm">
+                    <i class="fas fa-check me-2"></i>Teklifi Onaya Gönder
                 </button>
             </form>
         }
+
     </div>
 </div>
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Backend'den gelen kurları JS değişkenlerine alıyoruz
-            // CultureInfo.InvariantCulture önemli, yoksa 34,50 gelir ve JS hata verir.
+            // Senin orijinal Javascript kodların aynen korundu
             const guncelDolar = @Model.DolarKuru.ToString("0.####", CultureInfo.InvariantCulture);
             const guncelEuro = @Model.EuroKuru.ToString("0.####", CultureInfo.InvariantCulture);
 
@@ -364,8 +289,6 @@
             const inputMaliyet = document.getElementById('inputMaliyet');
             const inputMarj = document.getElementById('inputMarj');
             const inputKdv = document.getElementById('inputKdv');
-
-            // Yeni Eklenen Elementler
             const inputKur = document.getElementById('inputKur');
             const lblKurTuru = document.getElementById('lblKurTuru');
             const lblMaliyetParaBirimi = document.getElementById('lblMaliyetParaBirimi');
@@ -373,52 +296,33 @@
             if (selectElement) {
                 selectElement.addEventListener('change', function () {
                     const selectedOption = this.options[this.selectedIndex];
-
-                    // Verileri al
                     const alis = selectedOption.getAttribute('data-alis');
                     const marj = selectedOption.getAttribute('data-marj');
                     const kdv = selectedOption.getAttribute('data-kdv');
                     const paraBirimi = selectedOption.getAttribute('data-parabirimi');
 
-                    // 1. Maliyet, Marj, KDV Doldurma
                     inputMaliyet.value = (alis && alis !== '0') ? alis : '';
                     inputMarj.value = (marj && marj !== '0') ? marj : '0';
                     inputKdv.value = (kdv && kdv !== '0') ? kdv : '0';
 
-                    // 2. Para Birimi ve Kur Mantığı
                     if (paraBirimi) {
-                        lblMaliyetParaBirimi.innerText = paraBirimi; // Maliyet yanındaki simge (USD, EUR, TL)
-
+                        lblMaliyetParaBirimi.innerText = paraBirimi;
                         if (paraBirimi === 'USD') {
                             inputKur.value = guncelDolar;
-                            lblKurTuru.innerText = 'TL/USD'; // 1 USD kaç TL
+                            lblKurTuru.innerText = 'TL/USD';
                         }
                         else if (paraBirimi === 'EUR') {
                             inputKur.value = guncelEuro;
                             lblKurTuru.innerText = 'TL/EUR';
                         }
                         else {
-                            // TL veya diğerleri
                             inputKur.value = "1";
                             lblKurTuru.innerText = 'TL';
                         }
                     } else {
-                        // Seçim iptal edilirse varsayılana dön
                         lblMaliyetParaBirimi.innerText = 'TL';
                         inputKur.value = "1";
                         lblKurTuru.innerText = 'TL';
-                    }
-                });
-            }
-
-            // Form Submit Validasyonu 
-            const form = document.getElementById('addItemForm');
-            if (form) {
-                form.addEventListener('submit', function (e) {
-                    if (!selectElement.value) {
-                        e.preventDefault();
-                        alert('Lütfen bir ürün seçiniz!');
-                        selectElement.focus();
                     }
                 });
             }

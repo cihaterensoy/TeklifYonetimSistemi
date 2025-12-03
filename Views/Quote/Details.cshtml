@@ -1,4 +1,7 @@
-﻿@model TeklifYonetimSistemi.Models.QuoteModel
+﻿@model TeklifYonetimSistemi.Models.ViewModels.TeklifDetayViewModel
+
+@using System.Security.Claims
+@using System.Linq
 
 @{
     ViewData["Title"] = "Teklif Detayları";
@@ -7,14 +10,14 @@
 <div class="container mt-4">
     @* Üst Başlık ve Navigasyon *@
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Teklif Detayları: @Model.TeklifAdi</h2>
+        <h2>Teklif Detayları: @Model.Teklif.TeklifAdi</h2>
         <div>
             <a asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Teklif Listesine Dön
             </a>
-            @if (Model.Durum == QuoteStatus.Taslak)
+            @if (Model.Teklif.Durum == QuoteStatus.Taslak)
             {
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                <a asp-action="Edit" asp-route-id="@Model.Teklif.Id" class="btn btn-warning">
                     <i class="bi bi-pencil"></i> Başlığı Düzenle
                 </a>
             }
@@ -27,37 +30,32 @@
         <div class="card-body">
             <dl class="row mb-0">
                 <dt class="col-sm-3">Teklif No:</dt>
-                <dd class="col-sm-9">@Model.TeklifNo</dd>
+                <dd class="col-sm-9">@Model.Teklif.TeklifNo</dd>
 
                 <dt class="col-sm-3">Müşteri:</dt>
                 <dd class="col-sm-9">
-                    @(Model.Project?.Customer?.FirmaUnvani ?? "-")
+                    @(Model.Teklif.Project?.Customer?.FirmaUnvani ?? "-")
                 </dd>
 
                 <dt class="col-sm-3">Proje:</dt>
                 <dd class="col-sm-9">
-                    @(Model.Project?.ProjeAdi ?? "-")
+                    @(Model.Teklif.Project?.ProjeAdi ?? "-")
                 </dd>
 
                 <dt class="col-sm-3">Durum:</dt>
                 <dd class="col-sm-9">
-                    <span class="badge bg-info text-dark">@Model.Durum</span>
+                    <span class="badge bg-info text-dark">@Model.Teklif.Durum</span>
                 </dd>
-                @*
-                <dt class="col-sm-3">KDV Oranı (%):</dt>
-                <dd class="col-sm-9">@Model.KDVOrani.ToString("N2")</dd>
-                    *@
             </dl>
         </div>
     </div>
 
-    @* Teklif Kalemleri (QuoteItems) Listesi *@
+    @* Teklif Kalemleri *@
     <div class="mb-3">
-        <h3>Teklif Kalemleri <span class="text-muted fs-5">(@(Model.QuoteItems?.Count ?? 0))</span></h3>
+        <h3>Teklif Kalemleri <span class="text-muted fs-5">@((Model.Teklif.QuoteItems?.Count ?? 0))</span></h3>
     </div>
 
-    @* .Any() parantezleri eklendi ve Null kontrolü yapıldı *@
-    @if (Model.QuoteItems != null && Model.QuoteItems.Any())
+    @if (Model.Teklif.QuoteItems != null && Model.Teklif.QuoteItems.Any())
     {
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover align-middle">
@@ -70,7 +68,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.QuoteItems)
+                    @foreach (var item in Model.Teklif.QuoteItems)
                     {
                         <tr>
                             <td>@item.UrunAdi</td>
@@ -100,18 +98,12 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between mb-2">
                         <span>Ara Toplam:</span>
-                        <span class="fw-bold">@Model.AraToplam.ToString("C2")</span>
+                        <span class="fw-bold">@Model.Teklif.AraToplam.ToString("C2")</span>
                     </div>
-                    @*
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>KDV (@Model.KDVOrani.ToString("N0")%):</span>
-                        <span>@((Model.GenelToplam - Model.AraToplam).ToString("C2"))</span>
-                    </div>
-                        *@
                     <hr>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="h5 mb-0">Genel Toplam:</span>
-                        <span class="h4 text-success mb-0">@Model.GenelToplam.ToString("C2")</span>
+                        <span class="h4 text-success mb-0">@Model.Teklif.GenelToplam.ToString("C2")</span>
                     </div>
                 </div>
             </div>
@@ -121,20 +113,15 @@
     @* Aksiyon Butonları *@
     <div class="mt-4 pb-5">
         <div class="d-flex gap-2">
-            @* Ürün Ekleme/Çıkarma Sayfasına Git *@
             @if (User.IsInRole("Admin") || User.IsInRole("SatisElemani"))
             {
-                <a asp-controller="QuoteItem" asp-action="Index" asp-route-quoteId="@Model.Id" class="btn btn-lg btn-primary">
+                <a asp-controller="QuoteItem" asp-action="Index" asp-route-quoteId="@Model.Teklif.Id" class="btn btn-lg btn-primary">
                     <i class="bi bi-cart-plus"></i> Ürün/Hizmetleri Yönet
                 </a>
             }
-
-            
-
-            @* Onaya Gönder Butonu (Sadece Taslak ise görünür) *@
-            @if (Model.Durum == QuoteStatus.Taslak)
+            @if (Model.Teklif.Durum == QuoteStatus.Taslak)
             {
-                <form asp-action="SubmitForApproval" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Teklifi onaya göndermek istediğinizden emin misiniz?');">
+                <form asp-action="SubmitForApproval" asp-route-id="@Model.Teklif.Id" method="post" onsubmit="return confirm('Teklifi onaya göndermek istediğinizden emin misiniz?');">
                     <button type="submit" class="btn btn-lg btn-success">
                         <i class="bi bi-check-circle"></i> Onaya Gönder
                     </button>
@@ -143,3 +130,223 @@
         </div>
     </div>
 </div>
+
+<input type="hidden" id="teklifId" value="@Model.Teklif.Id" />
+
+<style>
+    /* CSS yapısı aynen korundu, sadece Bootstrap sınıflarıyla çatışmaması için temel chat stilini ekledim */
+    .chat-bubble-me {
+        background-color: #dcf8c6; /* BEN - Açık yeşil/mavi */
+        border-radius: 10px;
+        padding: 8px 12px;
+        max-width: 80%;
+        align-self: flex-end;
+    }
+
+    .chat-bubble-other {
+        background-color: #ffffff; /* Diğer - Beyaz */
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 8px 12px;
+        max-width: 80%;
+        align-self: flex-start;
+    }
+
+    #chatToggleBtn {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 60px;
+        height: 60px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        cursor: pointer;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+    }
+
+    #chatWindow {
+        position: fixed;
+        bottom: 100px;
+        right: 25px;
+        width: 350px;
+        height: 450px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 9999;
+    }
+
+    #chatHeader {
+        background: #007bff;
+        color: white;
+        padding: 12px;
+        font-weight: bold;
+    }
+
+    #chatMessages {
+        padding: 10px;
+        flex-grow: 1;
+        overflow-y: auto;
+        background: #f5f5f5;
+        display: flex; /* Mesajları baloncuk olarak hizalamak için flex kullanıldı */
+        flex-direction: column;
+    }
+
+    #chatInputArea {
+        display: flex;
+        border-top: 1px solid #ccc;
+    }
+
+    #chatMessageInput {
+        flex-grow: 1;
+        padding: 8px;
+        border: none;
+        outline: none;
+    }
+
+    #chatSendBtn {
+        background: #007bff;
+        color: white;
+        padding: 10px 15px;
+        cursor: pointer;
+        border: none;
+    }
+</style>
+
+<div id="chatToggleBtn">💬</div>
+
+<div id="chatWindow">
+    <div id="chatHeader">Teklif Sohbeti</div>
+    <div id="chatMessages">
+        @* Eski mesajlar (SignalR stilinde yeniden oluşturuldu) *@
+        @if (Model.GecmisMesajlar != null && Model.GecmisMesajlar.Any())
+        {
+            var currentUserName = User.Identity.Name;
+
+            foreach (var msg in Model.GecmisMesajlar)
+            {
+                var gonderenAdi = Model.KullaniciAdlari.GetValueOrDefault(msg.GonderenUserId, "Bilinmiyor");
+                var isMe = gonderenAdi == currentUserName;
+
+                // Görünen kullanıcı adını oluştur
+                var displayName = isMe ? "BEN" : gonderenAdi.Split('@')[0].Replace(".", "_").ToUpper();
+                var bubbleClass = isMe ? "chat-bubble-me" : "chat-bubble-other";
+
+                <div class="@bubbleClass" style="margin-bottom: 8px;">
+                    <strong>@displayName:</strong> @msg.MesajMetni
+                </div>
+            }
+        }
+        else
+        {
+            <p>Merhaba! Henüz mesaj yok.</p>
+        }
+    </div>
+    <div id="chatInputArea">
+        <input type="text" id="chatMessageInput" placeholder="Mesaj yaz..." />
+        <button id="chatSendBtn">Gönder</button>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // DOM Elementleri
+            const toggleBtn = document.getElementById("chatToggleBtn");
+            const chatWindow = document.getElementById("chatWindow");
+            const messagesList = document.getElementById("chatMessages");
+            const messageInput = document.getElementById("chatMessageInput");
+            const sendButton = document.getElementById("chatSendBtn");
+            const teklifId = document.getElementById("teklifId").value;
+            const currentUserName = "@User.Identity.Name"; // Oturum açan kullanıcının e-posta adı
+
+            // Sohbet Penceresini Açma/Kapatma
+            toggleBtn.addEventListener("click", () => {
+                chatWindow.style.display = chatWindow.style.display === "flex" ? "none" : "flex";
+                if (chatWindow.style.display === "flex") {
+                    // Açıldığında en alta kaydır
+                    messagesList.scrollTop = messagesList.scrollHeight;
+                    messageInput.focus();
+                }
+            });
+
+            // Yardımcı fonksiyon: Mesaj baloncuğunu HTML olarak oluşturur ve listeye ekler.
+            function appendMessage(user, message) {
+                const isMe = user === currentUserName;
+                const bubbleClass = isMe ? "chat-bubble-me" : "chat-bubble-other";
+
+                // Kullanıcı adını biçimlendir (cihat.erensoy@mail.com -> CIHAT_ERENSOY veya BEN)
+                let finalUserName = isMe ? "BEN" : user;
+
+                
+
+                const messageDiv = document.createElement("div");
+                messageDiv.className = bubbleClass;
+                messageDiv.style.marginBottom = '8px';
+                messageDiv.innerHTML = `<strong>${finalUserName}:</strong> ${message}`;
+
+                messagesList.appendChild(messageDiv);
+                messagesList.scrollTop = messagesList.scrollHeight; // Yeni mesajı görmek için aşağı kaydır
+            }
+
+            // SignalR Bağlantısı
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/chatHub")
+                .withAutomaticReconnect()
+                .build();
+
+            // Bağlantıyı Başlatma ve Gruba Katılma
+            connection.start().then(function () {
+                connection.invoke("JoinGroup", teklifId).catch(function (err) {
+                    return console.error("Gruba katılma hatası: " + err.toString());
+                });
+
+                messagesList.scrollTop = messagesList.scrollHeight;
+                sendButton.disabled = false;
+
+            }).catch(function (err) {
+                console.error(err.toString());
+            });
+
+            // Mesaj Gönderme İşlemi
+            sendButton.addEventListener("click", function (event) {
+                const message = messageInput.value.trim();
+
+                if (message) {
+                    connection.invoke("SendMessageAsync", message, parseInt(teklifId))
+                        .catch(function (err) {
+                            return console.error(err.toString());
+                        });
+
+                    messageInput.value = "";
+                }
+                event.preventDefault();
+            });
+
+            // Mesaj Alma İşlemi (Sunucudan Bildirim Gelince)
+            connection.on("ReceiveMessage", function (user, message) {
+                appendMessage(user, message);
+            });
+
+            // Enter tuşu ile gönderme
+            messageInput.addEventListener("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    sendButton.click();
+                }
+            });
+        });
+    </script>
+}

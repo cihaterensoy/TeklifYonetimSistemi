@@ -68,12 +68,37 @@
                                                  style="width: 45px; height: 45px; font-weight:bold; font-size:1.2rem;">
                                                 @basHarf
                                             </div>
-                                            
+
                                             <div>
                                                 <div class="fw-bold text-dark fs-6 aranan-metin">@item.FirmaUnvani</div>
-           
+
+                                                @* --- YENİ EKLENEN KISIM (Mükellef Durumu) --- *@
+                                                <div class="mt-1">
+                                                    @if (item.EFaturaMukellefiMi)
+                                                    {
+                                                        <span class="badge border fw-semibold"
+                                                              style="background-color:#e6f7ec; color:#198754; font-size:0.7rem;">
+                                                            <i class="bi bi-check-circle-fill me-1"></i> e-Fatura
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge border fw-semibold"
+                                                              style="background-color:#f1f1f1; color:#000; font-size:0.7rem;">
+                                                            <i class="bi bi-envelope-paper me-1"></i> e-Arşiv
+                                                        </span>
+                                                    }
+
+                                                    @if (!string.IsNullOrEmpty(item.VergiNo))
+                                                    {
+                                                        <small class="text-muted ms-1" style="font-size:0.75rem;">(VN: @item.VergiNo)</small>
+                                                    }
+                                                </div>
+
+                                                @* -------------------------------------------- *@
+
                                             </div>
-                                            
+
                                         </div>
                                     </td>
 

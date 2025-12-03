@@ -8,26 +8,37 @@ using System.Security.Claims; // Claims yöntemi için
 using TeklifYonetimSistemi.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using TeklifYonetimSistemi.Data;
+using TeklifYonetimSistemi.Services;
 
 [Authorize(Roles = "Admin,SatisElemani")]
 public class MusteriController : Controller
 {
     private readonly VeriTabaniDB _context;
     private readonly UserManager<KullaniciModel> _userManager;
-    public MusteriController(VeriTabaniDB context,UserManager<KullaniciModel> userManager)
+    private readonly IELogoService _eLogoService;
+    public MusteriController(VeriTabaniDB context,UserManager<KullaniciModel> userManager,IELogoService eLogoService)
     {
         _context = context;
         _userManager = userManager;
         //_context veri tabanı bağlantısı
         //VeritabaniDB DbContext sınıfıdır ve içinde DbSet<Customer> bulunur
         //Bu sayede müşteri kayıtlarını veritabanına ekleyebilir listeleyebilir ve güncelleyebiliriz
+        _eLogoService = eLogoService;
 
     }
     // LİSTELEME
     public async Task<IActionResult> ana() // async yaptık
     {
         // ToList yerine ToListAsync kullandık (Performans için)
-        var musteriler = await _context.Customers.Include(x=>x.Kullanici).ToListAsync();
+        //var musteriler = await _context.Customers.Include(x=>x.Kullanici).ToListAsync();
+        //kullanıcının id'sini alıyoruz
+        var user = await _userManager.GetUserAsync(User);
+        var sorgu = _context.Customers.Include(x => x.Kullanici).AsQueryable();
+        if (!User.IsInRole("Admin"))
+        {
+            sorgu = sorgu.Where(c => c.KullaniciId == user.Id);
+        }
+        var musteriler = await sorgu.ToListAsync();
         return View(musteriler);
         //context.Customers.ToList(); veritabanındaki tüm müşterileri alır ve liste olarak customers değişkenini atar
         //return view(customers) -> listeyi index.cshtml view'ına gönderir
@@ -92,10 +103,21 @@ public class MusteriController : Controller
     public async Task<IActionResult> Create(MusteriKayitViewModel model)
     {
         if (!ModelState.IsValid) return View(model);
+
+        // ENTEGRASYON BAŞLANGICI 
+        bool eFaturaMukellefi = false;
+        // Eğer vergi no girildiyse servise sor
+        if (!string.IsNullOrEmpty(model.VergiNo) && model.VergiNo.Length >= 10)
+        {
+            eFaturaMukellefi = await _eLogoService.MukellefKontrolAsync(model.VergiNo);
+        }
         var yeniFirma = new CustomerModel
         {
             FirmaUnvani = model.FirmaUnvani,
-            Email=model.Email,
+            VergiNo = model.VergiNo,
+            VergiDairesi = model.VergiDairesi,
+            EFaturaMukellefiMi = eFaturaMukellefi, // Sonucu kaydet
+            Email =model.Email,
             Telefon=model.Telefon,
             Il=model.Il,
             Ilce=model.Ilce,
@@ -239,21 +261,30 @@ public class MusteriController : Controller
     }
     // bu delete sınıfını düzelt, soft delete atacağız
     [HttpPost]
-    // Metodu asenkron yaptık
     public async Task<IActionResult> Delete(int id)
     {
-        // 1. Müşteriyi asenkron olarak bul
-        var musteri = await _context.Customers.FirstOrDefaultAsync(m => m.Id == id);
+        // 1. Müşteriyi (Firmayı) ve ona bağlı Kullanıcıları (FirmaYetkilileri) getiriyoruz.
+        // Include kullanmazsak bağlı kullanıcılar gelmez, silmeye çalışırken yine hata alırız.
+        var musteri = await _context.Customers
+                                    .Include(c => c.FirmaYetkilileri)
+                                    .FirstOrDefaultAsync(m => m.Id == id);
 
         if (musteri != null)
         {
+            // 2. Önce bu firmaya bağlı tüm kullanıcıları siliyoruz (Hard Delete)
+            if (musteri.FirmaYetkilileri != null && musteri.FirmaYetkilileri.Any())
+            {
+                // _context.Users tablosundan bu kişileri kaldırıyoruz.
+                _context.Users.RemoveRange(musteri.FirmaYetkilileri);
+            }
+
+            // 3. Kullanıcılar gittiğine göre artık firmayı da silebiliriz.
             _context.Customers.Remove(musteri);
 
-            // 3. KAYDETME İŞLEMİ: Asenkron yaptık
+            // 4. Tüm bu işlemleri tek seferde veritabanına uyguluyoruz.
             await _context.SaveChangesAsync();
         }
 
-        // İşlem başarılı, listeye yönlendir
         return RedirectToAction("ana");
     }
 

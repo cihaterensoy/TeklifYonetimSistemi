@@ -58,6 +58,18 @@ public class CustomerModel
     //virtual anahtar kelimesi EF’in Lazy Loading yapmasını sağlar.
     //Lazy Loading = Veri sadece ihtiyaç olduğunda veritabanından çekilir.
 
+
+    //e-logo için eklenen detaylar
+    [Display(Name ="Vergi No / TCKN")]
+    [StringLength(11,ErrorMessage = "Vergi No/TCKN en fazla 11 karakter olabilir.")]
+    public string? VergiNo { get; set; }
+
+    [Display(Name = "Vergi Dairesi")]
+    public string? VergiDairesi { get; set; }
+
+    [Display(Name = "e-Fatura Mükellefi mi?")]
+    public bool EFaturaMukellefiMi { get; set; } = false;
+
 }
 
 /*

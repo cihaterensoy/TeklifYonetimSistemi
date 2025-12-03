@@ -21,7 +21,18 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
     <PackageReference Include="QuestPDF" Version="2025.7.4" />
+    <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Primitives" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Http" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Duplex" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Security" Version="6.0.0" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="6.0.0" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Remove="Contexts\" />
     <None Remove="Views\Login\" />
@@ -36,27 +47,13 @@
     <None Remove="Data\" />
     <None Remove="Services\" />
     <None Remove="Views\Order\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Contexts\" />
-    <Folder Include="Views\Login\" />
-    <Folder Include="Views\Admin\" />
-    <Folder Include="Views\Musteri\" />
-    <Folder Include="Views\Project\" />
-    <Folder Include="Views\Product\" />
-    <Folder Include="Models\ViewModels\" />
-    <Folder Include="Views\KullaniciEkle\" />
-    <Folder Include="Views\Quote\" />
-    <Folder Include="Views\QuoteItem\" />
-    <Folder Include="Data\" />
-    <Folder Include="Services\" />
-    <Folder Include="Views\Order\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Views\Musteri\Index.cshtml" />
-    <Content Remove="Views\KullaniciEkle\Goruntule.cshtml" />
+    <None Remove="Hubs\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hubs\" />
   </ItemGroup>
 </Project>

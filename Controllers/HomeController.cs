@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; // Bunu eklemeyi unutma
 using TeklifYonetimSistemi.Contexts; // Context'in olduğu yeri ekle
+using TeklifYonetimSistemi.Services;
 
 [Authorize]
 public class HomeController : Controller
@@ -38,4 +40,23 @@ public class HomeController : Controller
         
         return View();
     }
+    public async Task<IActionResult> LogoTest([FromServices] ELogoService logoServis)
+    {
+        //controller metodu web uygulamada bir route(web uygulamada bir url yolu) olarak çalışır
+        //async Task<IActionResult> METOT ASENKRON ÇALIŞIYOR HTTP CEVABI döndürüyor
+        //[FromServices] dependency injection'dan al parametre olarak ver
+        //Normal parametreler → genellikle URL’den, formdan veya query string’den gelir.
+        //[FromServices] parametreleri → Dependency Injection (DI) sisteminden gelir.
+        //Yani sen manuel olarak new ELogoService() yapmana gerek yok, ASP.NET Core otomatik olarak hazır bir nesne verir.
+        try
+        {
+            var sonuc = await logoServis.LoginOlVeSessionAlAsync();
+            return Content("Gelen Cevap: " + sonuc);
+        }
+        catch(Exception ex)
+        {
+            return Content("Hata Oldu Gelen Cevap: " + ex.Message);
+        }
+    }
+
 }

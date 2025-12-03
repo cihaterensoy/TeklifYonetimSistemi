@@ -18,6 +18,8 @@ namespace TeklifYonetimSistemi.Contexts
 
         public DbSet<QuoteModel> Quotes { get; set; }
         public DbSet<QuoteItemModel> QuoteItems { get; set; }
+        public DbSet<TeklifMesaj> TeklifMesajlar { get; set; }
+
     }
 }
 /*Bu kod, Identity ile kullanıcı yönetimini destekleyen bir veritabanı bağlamı (DbContext) oluşturuyor.

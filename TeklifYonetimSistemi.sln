@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeklifYonetimSistemi", "TeklifYonetimSistemi.csproj", "{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6D0AE44F-C5AC-4A31-9587-A0258B20AAC4}
+	EndGlobalSection
+EndGlobal

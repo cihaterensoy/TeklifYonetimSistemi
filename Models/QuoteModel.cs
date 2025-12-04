@@ -23,6 +23,8 @@ public class QuoteModel
     public DateTime? TeklifSonTarihi { get; set; }
 
     public QuoteStatus Durum { get; set; } = QuoteStatus.Taslak;
+    [Display(Name = "Revize Gerekçe Notu")]
+    public string? ReviseReasonNote { get; set; } //status revize olursa kullanılacak bir alan bu yüzden dolu olmasına gerek yok yani 
 
     public string TeklifNotu { get; set; }
 

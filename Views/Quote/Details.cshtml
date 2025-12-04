@@ -15,10 +15,10 @@
             <a asp-action="Index" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Teklif Listesine Dön
             </a>
-            @if (Model.Teklif.Durum == QuoteStatus.Taslak)
+            @if (Model.Teklif.Durum == QuoteStatus.Taslak || Model.Teklif.Durum == QuoteStatus.RevizeGerekiyor)
             {
                 <a asp-action="Edit" asp-route-id="@Model.Teklif.Id" class="btn btn-warning">
-                    <i class="bi bi-pencil"></i> Başlığı Düzenle
+                    <i class="bi bi-pencil"></i> @(Model.Teklif.Durum == QuoteStatus.RevizeGerekiyor ? "Revize Et" : "Başlığı Düzenle")
                 </a>
             }
         </div>
@@ -42,10 +42,30 @@
                     @(Model.Teklif.Project?.ProjeAdi ?? "-")
                 </dd>
 
+                @* ✅ EKLENDİ: Tarih Bilgileri *@
+                <dt class="col-sm-3">Oluşturulma Tarihi:</dt>
+                <dd class="col-sm-9">@Model.Teklif.TeklifOlusturulmaTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                <dt class="col-sm-3">Geçerlilik Tarihi:</dt>
+                <dd class="col-sm-9">@(Model.Teklif.TeklifSonTarihi?.ToString("dd.MM.yyyy") ?? "-")</dd>
+
                 <dt class="col-sm-3">Durum:</dt>
                 <dd class="col-sm-9">
                     <span class="badge bg-info text-dark">@Model.Teklif.Durum</span>
                 </dd>
+
+                @* Revize Notu *@
+                @if (Model.Teklif.Durum == QuoteStatus.RevizeGerekiyor
+                   && !string.IsNullOrEmpty(Model.Teklif.ReviseReasonNote))
+                {
+                    <dt class="col-sm-3 text-warning">Revize Gerekçesi:</dt>
+                    <dd class="col-sm-9">
+                        <div class="alert alert-warning py-1 my-1">
+                            <strong>Yönetici Notu:</strong> @Model.Teklif.ReviseReasonNote
+                        </div>
+                    </dd>
+                }
+
             </dl>
         </div>
     </div>
@@ -130,6 +150,8 @@
         </div>
     </div>
 </div>
+
+<input type="hidden" id="teklifId" value="@Model.Teklif.Id" />
 
 <input type="hidden" id="teklifId" value="@Model.Teklif.Id" />
 
@@ -290,7 +312,7 @@
                 // Kullanıcı adını biçimlendir (cihat.erensoy@mail.com -> CIHAT_ERENSOY veya BEN)
                 let finalUserName = isMe ? "BEN" : user;
 
-                
+
 
                 const messageDiv = document.createElement("div");
                 messageDiv.className = bubbleClass;

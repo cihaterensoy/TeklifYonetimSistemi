@@ -5,9 +5,39 @@
 }
 
 <div class="container mt-4">
+
+    @* 👇 FİLTRE DURUMU BİLDİRİMİ *@
+    @if (ViewBag.FiltreliMi == true)
+    {
+        <div class="alert alert-info d-flex justify-content-between align-items-center shadow-sm border-0 border-start border-4 border-info mb-3">
+            <div>
+                <i class="fas fa-filter me-2"></i>
+                <strong>@ViewBag.FirmaAdi</strong> firmasına bağlı yetkilileri görüntülüyorsunuz.
+            </div>
+            <a asp-action="Index" asp-route-customerId="" class="btn btn-sm btn-light text-info fw-bold">
+                <i class="fas fa-times"></i> Filtreyi Temizle
+            </a>
+        </div>
+    }
+    @* 👆 FİLTRE DURUMU BİLDİRİMİ BİTTİ *@
+
     <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Kullanıcı Listesi</h4>
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Kullanıcı Listesi @(ViewBag.FirmaAdi != null ? $" ({ViewBag.FirmaAdi})" : "")</h4>
+
+            @* 👇 DİNAMİK YETKİLİ EKLE BUTONU *@
+            @if (ViewBag.FiltreliMi == true)
+            {
+                <a asp-action="Ekle" asp-route-customerId="@ViewBag.FiltreCustomerId" class="btn btn-light btn-sm text-primary fw-bold">
+                    <i class="fas fa-user-plus"></i> Bu Firmaya Yetkili Ekle
+                </a>
+            }
+            else
+            {
+                <a asp-action="Ekle" class="btn btn-light btn-sm text-primary fw-bold">
+                    <i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle
+                </a>
+            }
         </div>
         <div class="card-body p-0">
             <table class="table table-striped table-hover mb-0">
@@ -22,7 +52,7 @@
                 </thead>
                 <tbody>
                     @foreach (var user in Model)
-                        {
+                    {
                         <tr>
                             <td>@user.Isim @user.Soyisim</td>
                             <td>

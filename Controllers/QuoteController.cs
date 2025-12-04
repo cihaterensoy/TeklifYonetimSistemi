@@ -236,9 +236,9 @@ public class QuoteController : Controller
         {
             return NotFound();
         }
-        if (quote.Durum != QuoteStatus.Taslak)
+        if (quote.Durum != QuoteStatus.Taslak && quote.Durum != QuoteStatus.RevizeGerekiyor)
         {
-            TempData["HataMesaji"] = "Teklif sadece taslak durumundayken onaya gönderilebilir";
+            TempData["HataMesaji"] = "Teklif sadece taslak veya Revize durumundayken onaya gönderilebilir";
             return RedirectToAction("Index");
         }
         if (quote.QuoteItems.Count == 0)
@@ -336,6 +336,38 @@ public class QuoteController : Controller
         await _context.SaveChangesAsync();
         TempData["HataMesaji"] = "Teklif revize edilmesi için personele geri gönderildi.";
         return RedirectToAction("Index");
+    }
+    [HttpPost]
+    [Authorize(Roles = "Admin,SatisElemani")]
+    public async Task<IActionResult> RevizeTamamlandi(QuoteModel model)
+    {
+        //model binder'dan kaldırma bu sayede customer nesneleri view'a gitmiyor
+        ModelState.Remove("Project");
+        ModelState.Remove("Project.Customer");
+
+        if (!ModelState.IsValid)
+        {
+            TempData["HataMesaji"] = "Litfen teklif başlığını ve geçerlilik tarihi alanlarını kontrol edin.";
+            return RedirectToAction("Details", new { id = model.Id });
+        }
+
+        var existingQuote = await _context.Quotes.FirstOrDefaultAsync(q => q.Id == model.Id);
+        if (existingQuote == null) return NotFound();
+
+        existingQuote.TeklifAdi = model.TeklifAdi;
+        existingQuote.TeklifSonTarihi = model.TeklifSonTarihi;
+        existingQuote.Vade = model.Vade;
+        existingQuote.TeklifNotu = model.TeklifNotu;
+
+        existingQuote.Durum = QuoteStatus.YoneticiOnayBekliyor;
+
+        existingQuote.ReviseReasonNote = null; //düzenlemeyi yaptığımız için temizliyoruz içeriğini
+        _context.Quotes.Update(existingQuote);
+        await _context.SaveChangesAsync();
+        TempData["BasariMesaji"] = $"Teklif ({existingQuote.TeklifNo}) revize edilerek tekrar yönetici onayına gönderildi.";
+
+        // Teklif öğelerinin düzenlendiği sayfaya yönlendiriyoruz (QuoteItem/Index)
+        return RedirectToAction("Index", "QuoteItem", new { quoteId = model.Id });
     }
     [HttpPost]
     [Authorize(Roles = "Admin")] // Sadece Admin rolündekiler reddeebilir.

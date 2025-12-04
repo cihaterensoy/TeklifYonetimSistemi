@@ -36,9 +36,24 @@ public class KullaniciEkleController:Controller
         _context = context;
     }
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int? customerId)
     {
+        /*
         var kullanicilar = await _context.Users.Include(u => u.Customer).ToListAsync();
+        return View(kullanicilar);
+        */
+        var query = _context.Users.Include(u => u.Customer).AsQueryable();
+        if(customerId.HasValue)
+        {
+            query = query.Where(u => u.CustomerId == customerId.Value);
+            var firma = await _context.Customers.FindAsync(customerId.Value);
+            if(firma!=null)
+            {
+                ViewBag.FirmaAdi = firma.FirmaUnvani;
+                ViewBag.FiltreliMi = true;
+            }
+        }
+        var kullanicilar = await query.ToListAsync();
         return View(kullanicilar);
     }
     [HttpGet]

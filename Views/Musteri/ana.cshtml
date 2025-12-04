@@ -7,6 +7,8 @@
 <div class="container mt-4">
 
     <div class="row align-items-center mb-4">
+        @* ... Mevcut başlık ve arama kutusu kodları ... *@
+
         <div class="col-md-6">
             <h2 class="fw-bold text-dark mb-0">
                 <i class="bi bi-people-fill text-primary"></i> Müşteri Portföyü
@@ -130,6 +132,14 @@
 
                                     <td class="text-end pe-4">
                                         <div class="d-flex justify-content-end gap-2">
+
+                                            @* 👇 YENİ EKLENEN BUTON *@
+                                            <a asp-controller="KullaniciEkle" asp-action="Index" asp-route-customerId="@item.Id"
+                                               class="btn btn-sm btn-info text-white" title="Firma Yetkililerini Listele">
+                                                <i class="bi bi-people-fill"></i> Yetkililer
+                                            </a>
+                                            @* 👆 *@
+
                                             <a asp-controller="Project" asp-action="Index" asp-route-customerId="@item.Id" class="btn btn-info btn-sm text-white">
                                                 <i class="bi bi-folder2-open"></i> Projeler
                                             </a>

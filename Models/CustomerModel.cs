@@ -46,10 +46,18 @@ public class CustomerModel
        İşte o ID'ye sahip olan kullanıcıları burada liste olarak göreceksin.
        Yani bu liste "Firma Çalışanları"nı getirecek.
     */
+    /*
+     * 
+     * Serileştirme Döngüsü'nden (Circular Reference)'i çözmek için yorum satırına aldım
     //Bu sınıftaki FirmaYetkilileri ile KullaniciModel içindeki Customer özelliği birbirinin ters yönlü ilişkisidir
     [InverseProperty("Customer")]
     public virtual ICollection<KullaniciModel> FirmaYetkilileri { get; set; }
     //Entity Framework’te bir sınıfın başka bir sınıfla ilişkisini temsil eden property’lere navigasyon özelliği denir.
+    */
+    [InverseProperty("Customer")]
+    [ValidateNever] // 👇 Kritik: Bu koleksiyonu serileştirme ve validasyondan çıkarır.
+    public ICollection<KullaniciModel> FirmaYetkilileri { get; set; }
+
     //sınıf firmaModel
     //navigasyon özelliği
     //

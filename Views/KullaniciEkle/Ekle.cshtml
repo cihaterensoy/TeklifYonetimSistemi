@@ -1,13 +1,30 @@
 ﻿@model TeklifYonetimSistemi.Models.ViewModels.KullaniciEkleViewModel
 
+@{
+    // Controller'dan (KullaniciEkleController.cs - Ekle GET metodu) gelen Customer Id'yi yakala
+    var otomatikId = ViewData["OtomatikMusteriId"]?.ToString();
+}
+
 <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle</h4>
+        <h4 class="mb-0">
+            <i class="fas fa-user-plus"></i>
+            @if (!string.IsNullOrEmpty(otomatikId))
+            {
+                <span>Müşteri Yetkilisi Ekle</span>
+            }
+            else
+            {
+                <span>Yeni Kullanıcı Ekle</span>
+            }
+        </h4>
         <a href="/Home/Index" class="btn btn-light btn-sm text-primary fw-bold">İptal</a>
     </div>
     <div class="card-body">
         <form asp-action="Ekle" method="post">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            @* Artık hidden input'ları otomatik eklemek yerine, JavaScript ile formun sonuna ekleyeceğiz. *@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -38,6 +55,7 @@
 
             <div class="mb-3">
                 <label asp-for="Rol" class="form-label fw-bold">Yetki (Rol)</label>
+                @* HATA ÇIKARAN C# KISMI KALDIRILDI *@
                 <select asp-for="Rol" class="form-select" asp-items="ViewBag.Roller" id="rolSecimi" onchange="rolDegisti()">
                     <option value="">Bir Rol Seçiniz</option>
                 </select>
@@ -46,13 +64,14 @@
 
             <div class="mb-4 p-3 bg-light border rounded border-primary" id="firmaKutusu" style="display:none;">
                 <label asp-for="CustomerId" class="form-label fw-bold text-primary">
-                    <i class="fas fa-building"></i> Bağlı Olduğu Firma (Opsiyonel)
+                    <i class="fas fa-building"></i> Bağlı Olduğu Firma
                 </label>
-                <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Firmalar">
+                @* HATA ÇIKARAN C# KISMI KALDIRILDI *@
+                <select asp-for="CustomerId" class="form-select" asp-items="ViewBag.Firmalar" id="CustomerId">
                     <option value="">-- Firma Yok / Serbest Kullanıcı --</option>
                 </select>
                 <small class="text-muted">
-                    Eğer bu kullanıcı bir müşteri firmasının yetkilisiyse buradan seçiniz. Seçmezseniz herhangi bir firmaya bağlı olmaz.
+                    Bu kullanıcı otomatik olarak seçilen firmaya atanacaktır.
                 </small>
             </div>
 
@@ -68,27 +87,67 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
-    <script>function rolDegisti() {
+    <script>
+        function rolDegisti() {
             var secilenRol = document.getElementById("rolSecimi").value;
             var firmaDiv = document.getElementById("firmaKutusu");
 
             // EĞER SEÇİLEN ROL "FirmaKullanicisi" İSE KUTUYU AÇ
-            // Buradaki string veritabanındaki rol ismiyle (UserRoles.cs) BİREBİR AYNI olmalı.
             if (secilenRol === "FirmaKullanicisi") {
                 firmaDiv.style.display = "block";
-
-                // Animasyonlu giriş (isteğe bağlı)
                 firmaDiv.classList.add("animate__animated", "animate__fadeIn");
             } else {
                 firmaDiv.style.display = "none";
-
-                // Kutu gizlenince seçimi temizlemek istersen şu satırı açabilirsin:
-                // document.getElementById("CustomerId").value = "";
+                // Kutu gizlenince seçimi temizle
+                document.getElementById("CustomerId").value = "";
             }
         }
 
-        // Sayfa yüklendiğinde de kontrol et (Eğer hata alıp geri dönerse kutu açık kalsın diye)
         document.addEventListener("DOMContentLoaded", function() {
-            rolDegisti();
-        });</script>
+            // Controller'dan gelen ID'yi yakala
+            const otomatikId = "@otomatikId";
+
+            const rolSecimiDropdown = document.getElementById("rolSecimi");
+            const customerIdDropdown = document.getElementById("CustomerId");
+
+            if (otomatikId && otomatikId !== "") {
+                const firmaKutusuDiv = document.getElementById("firmaKutusu");
+
+                // 1. Rolü "FirmaKullanicisi" olarak ayarla ve DEVRE DIŞI BIRAK
+                rolSecimiDropdown.value = "FirmaKullanicisi";
+                rolSecimiDropdown.disabled = true;
+
+                // 2. Firma kutusunu göster
+                firmaKutusuDiv.style.display = "block";
+                firmaKutusuDiv.classList.add("animate__animated", "animate__fadeIn");
+
+                // 3. Firma dropdown'unda gelen ID'yi seçili yap ve DEVRE DIŞI BIRAK
+                if (customerIdDropdown) {
+                    customerIdDropdown.value = otomatikId;
+                    customerIdDropdown.disabled = true;
+                }
+
+                // 4. GİZLİ INPUT EKLEME: Disabled elementler POST edilmediği için değerleri manuel ekliyoruz.
+                const form = document.querySelector("form");
+
+                // Customer ID (Bağlı olduğu Firma) için gizli alan
+                const hiddenCustomerId = document.createElement("input");
+                hiddenCustomerId.type = "hidden";
+                hiddenCustomerId.name = "CustomerId";
+                hiddenCustomerId.value = otomatikId;
+                form.appendChild(hiddenCustomerId);
+
+                // Rol bilgisi için gizli alan
+                const hiddenRol = document.createElement("input");
+                hiddenRol.type = "hidden";
+                hiddenRol.name = "Rol";
+                hiddenRol.value = "FirmaKullanicisi";
+                form.appendChild(hiddenRol);
+
+            } else {
+                // Normal akış: Sadece manuel seçim yapılıyorsa
+                rolDegisti();
+            }
+        });
+    </script>
 }

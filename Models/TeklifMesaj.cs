@@ -20,4 +20,5 @@ public class TeklifMesaj
 
     // İndeksleme: Performans için kritik!
     public bool OkunduMu { get; set; } = false;
+
 }

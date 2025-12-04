@@ -265,7 +265,7 @@ public class QuoteController : Controller
     {
         //ya hepsini değiştir ya da hiç değiştirme
         //veritabanında bir işlemi bloğu başlatıyor. bu blok içindeki değişiklikleri ya tamamen uygulaancak ya da hiç uygulanmayacak eğer bir sorun olursa tüm değişiklikler geri alanacak
-        using var transastion = await _context.Database.BeginTransactionAsync();
+        using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
             var quote = await _context.Quotes
@@ -312,7 +312,7 @@ public class QuoteController : Controller
         }
         catch(Exception ex)
         {   
-            await transastion.RollbackAsync();
+            await transaction.RollbackAsync();
             //başlattığımız transasction'ı geri al ve bu işlem sırasında yapılan tüm değişiklikleri iptal et
             TempData["HataMesaji"] = "Bir hata oluştu: " + ex.Message;
             return RedirectToAction("Index");
@@ -396,6 +396,7 @@ public class QuoteController : Controller
     [Authorize(Roles = "Admin,FirmaKullanicisi")]// Sadece Admin rolündekiler reddeebilir.
     public async Task<IActionResult> MusteriReject(int id)
     {
+        //Teklif ve ona bağlı ürünleri veritabanından çekiyoruz
         var quote = await _context.Quotes.Include(q=>q.QuoteItems).ThenInclude(qi=>qi.Product).FirstOrDefaultAsync(q => q.Id == id);
         if (quote == null) return NotFound();
         if (quote.Durum != QuoteStatus.MusteriOnayiBekliyor)
@@ -407,17 +408,29 @@ public class QuoteController : Controller
             return RedirectToAction("Index");
 
         }
-        foreach(var item in quote.QuoteItems)
+        //transaction kullanarak işlemleri bir bütün olarak ele almayı sağlıyoruz
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            if(item.Product != null && item.Product.StokTakibiYapilsinMi)
+            foreach (var item in quote.QuoteItems)
             {
-                item.Product.StokMiktari += item.Miktar;
+                if (item.Product != null && item.Product.StokTakibiYapilsinMi)
+                {
+                    item.Product.StokMiktari += item.Miktar;
+                }
             }
+            quote.Durum = QuoteStatus.Reddedildi;
+            await _context.SaveChangesAsync();
+            TempData["BasariMesaji"] = $"Teklif ({quote.TeklifNo}) müşteri tarafından REDDEDİLDİ.";
+            return RedirectToAction("Index");
         }
-        quote.Durum = QuoteStatus.Reddedildi;
-        await _context.SaveChangesAsync();
-        TempData["BasariMesaji"] = $"Teklif ({quote.TeklifNo}) müşteri tarafından REDDEDİLDİ.";
-        return RedirectToAction("Index");
+        catch (Exception ex)
+        {
+            //bir hata oldu değişiklikleri geri al
+            await transaction.RollbackAsync();
+            TempData["HataMesaji"] = "İşlem sırasında bir hata oluştu ve tüm değişiklikler geri alındı. Detay: " + ex.Message;
+            return RedirectToAction("Index"); // Ana sayfaya dön
+        }
     }
 
     //buradaki delete sadece hatalı girilen verileri silmek için kullanılıyor. uygulamanın son halinde bunu kaldırsan daha iyi olur

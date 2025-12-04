@@ -42,7 +42,7 @@ public class KullaniciEkleController:Controller
         return View(kullanicilar);
     }
     [HttpGet]
-    public async Task<IActionResult> Ekle() //asenkron işlem yapmak için kullandık
+    public async Task<IActionResult> Ekle(int? customerId) //asenkron işlem yapmak için kullandık
     {
         var roller = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
         // _roleManager.Roles -> controller içinde Dependency Injection almış RoleManager<IdentityRole> örneğidir
@@ -50,12 +50,17 @@ public class KullaniciEkleController:Controller
         //Select(r => r.Name) select ile IdentitiyRole nesnesniin tamamını değil sadece name alanını alıyoruz
         //her bir role için sadece name alanını seçer
         ViewBag.Roller = new SelectList(roller);
-
+       
         //kullanıcı firma çalışanıysa eklenecek firmaları
         //EKLEME 2: Firmaları Dropdown için hazırla
         // Sadece ID ve İsimlerini çekiyoruz, tüm tabloyu çekmeye gerek yok (Performans).
         var firmalar = await _context.Customers.Select(c => new { c.Id, c.FirmaUnvani }).ToListAsync();
         ViewBag.Firmalar = new SelectList(firmalar, "Id", "FirmaUnvani");
+        if (customerId.HasValue)
+        {
+            // Bu ID'yi formun Razor tarafında kullanmak için ViewData'ya kaydediyoruz.
+            ViewData["OtomatikMusteriId"] = customerId.Value;
+        }
         return View();
     }
     [HttpPost]

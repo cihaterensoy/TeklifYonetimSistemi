@@ -40,6 +40,38 @@
                         <dd class="col-sm-8"><a href="mailto:@Model.Email">@Model.Email</a></dd>
                     </dl>
                 </div>
+                @* Views/Musteri/Details.cshtml dosyasında, iletişim bilgilerinin altına ekleyin *@
+
+                <hr class="mt-4" />
+
+                <h5 class="text-dark mb-3 d-flex justify-content-between align-items-center">
+                    Bağlı Yetkili Kullanıcılar (@(Model.FirmaYetkilileri?.Count ?? 0))
+
+                    @* 👇 KRİTİK BUTON: Yeni Yetkili ekleme işlemini başlatır ve Müşteri ID'sini parametre olarak gönderir. *@
+                    <a asp-controller="KullaniciEkle" asp-action="Ekle" asp-route-customerId="@Model.Id" class="btn btn-sm btn-outline-primary shadow-sm">
+                        <i class="bi bi-person-plus-fill"></i> Yeni Yetkili Ekle
+                    </a>
+                </h5>
+
+                @if (Model.FirmaYetkilileri != null && Model.FirmaYetkilileri.Any())
+                {
+                    <ul class="list-group list-group-flush border rounded">
+                        @foreach (var yetkili in Model.FirmaYetkilileri)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-info">@yetkili.Isim @yetkili.Soyisim</strong>
+                                    <small class="text-muted d-block">@yetkili.Email</small>
+                                </div>
+                                <span class="badge bg-light text-muted border">Firma Yetkilisi</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="alert alert-warning small">Bu firmaya atanmış yetkili kullanıcı yok.</div>
+                }
             </div>
         </div>
         <div class="card-footer bg-light d-flex justify-content-end gap-2 p-3">

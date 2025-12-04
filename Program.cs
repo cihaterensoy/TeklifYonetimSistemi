@@ -7,11 +7,24 @@ using TeklifYonetimSistemi.Services;   // IEmailService ve servisler için
 using Microsoft.AspNetCore.Localization; // Dil ayarları için
 using System.Globalization; // Kültür ayarları için
 using TeklifYonetimSistemi.Hubs;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // MVC ve Razor Pages Servisleri
-builder.Services.AddControllersWithViews();
+//builder.Services.AddControllersWithViews();
+
+// MVC ve Razor Pages Servisleri
+// 👇 MEVCUT KODU BU ŞEKİLDE GÜNCELLEYİN
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        // JSON Serileştiriciye döngüsel referansları görmezden gel talimatı verilir.
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+// 👆 BU KISIM ÇÖZÜMÜ SAĞLAR
+
+
 builder.Services.AddRazorPages();
 
 // Veritabanı Bağlantısı (DbContext)

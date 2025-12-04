@@ -43,7 +43,7 @@ public class MusteriController : Controller
         //context.Customers.ToList(); veritabanındaki tüm müşterileri alır ve liste olarak customers değişkenini atar
         //return view(customers) -> listeyi index.cshtml view'ına gönderir
     }
-    
+    /*
     //Detay Görüntüleme
     public IActionResult Details(int id)
     {
@@ -56,6 +56,20 @@ public class MusteriController : Controller
         }
         return View(musteri);
         //return View(musteri) → Bulunan müşteri bilgilerini Details.cshtml view’ine gönderir.
+    }
+    */
+    //bir firmaya bağlı birden fazla firma yetkilisi eklemek için değişiklik yapıyorum
+    public async Task<IActionResult> Details(int id)
+    {
+        var musteri = await _context.Customers
+            .Include(c => c.FirmaYetkilileri)//İlişkili kullanıcıları da yüklüyoruz.
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (musteri == null)
+        {
+            return NotFound();
+            //if (musteri == null) return NotFound(); → Eğer müşteri bulunamazsa HTTP 404 döndürür.
+        }
+        return View(musteri);
     }
     //formu göndermek için kullanılır
     //Kullanıcı bir müşteri eklemek istediğinde form acılır

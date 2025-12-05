@@ -56,7 +56,7 @@
 
                 @* Revize Notu *@
                 @if (Model.Teklif.Durum == QuoteStatus.RevizeGerekiyor
-                   && !string.IsNullOrEmpty(Model.Teklif.ReviseReasonNote))
+                && !string.IsNullOrEmpty(Model.Teklif.ReviseReasonNote))
                 {
                     <dt class="col-sm-3 text-warning">Revize Gerekçesi:</dt>
                     <dd class="col-sm-9">
@@ -244,22 +244,24 @@
     }
 </style>
 
+
+
+
+@* 1. Sohbet Butonu ve Penceresi HER ZAMAN Render Edilsin *@
 <div id="chatToggleBtn">💬</div>
 
 <div id="chatWindow">
     <div id="chatHeader">Teklif Sohbeti</div>
+
     <div id="chatMessages">
-        @* Eski mesajlar (SignalR stilinde yeniden oluşturuldu) *@
+        @* Geçmiş mesajları listele *@
         @if (Model.GecmisMesajlar != null && Model.GecmisMesajlar.Any())
         {
             var currentUserName = User.Identity.Name;
-
             foreach (var msg in Model.GecmisMesajlar)
             {
                 var gonderenAdi = Model.KullaniciAdlari.GetValueOrDefault(msg.GonderenUserId, "Bilinmiyor");
                 var isMe = gonderenAdi == currentUserName;
-
-                // Görünen kullanıcı adını oluştur
                 var displayName = isMe ? "BEN" : gonderenAdi.Split('@')[0].Replace(".", "_").ToUpper();
                 var bubbleClass = isMe ? "chat-bubble-me" : "chat-bubble-other";
 
@@ -270,15 +272,28 @@
         }
         else
         {
-            <p>Merhaba! Henüz mesaj yok.</p>
+            <p class="text-center text-muted mt-3">Henüz mesaj yok.</p>
         }
     </div>
-    <div id="chatInputArea">
-        <input type="text" id="chatMessageInput" placeholder="Mesaj yaz..." />
-        <button id="chatSendBtn">Gönder</button>
-    </div>
-</div>
 
+    @* 2. Sadece Mesaj Yazma Alanını (Input) Koşula Bağlayın *@
+    @if (Model.Teklif.Durum != TeklifYonetimSistemi.Models.QuoteStatus.Onaylandi &&
+        Model.Teklif.Durum != TeklifYonetimSistemi.Models.QuoteStatus.Reddedildi)
+    {
+        @* Süreç devam ediyorsa kutuyu göster *@
+        <div id="chatInputArea">
+            <input type="text" id="chatMessageInput" placeholder="Mesaj yaz..." />
+            <button id="chatSendBtn">Gönder</button>
+        </div>
+    }
+    else
+    {
+        @* Süreç bittiyse bilgi mesajı göster *@
+        <div class="p-3 text-center bg-light text-secondary border-top small">
+            <i class="bi bi-lock-fill"></i> Teklif sonuçlandığı için sohbet kapatılmıştır.
+        </div>
+    }
+</div>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>

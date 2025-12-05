@@ -55,10 +55,32 @@
 
             <div class="mb-3">
                 <label asp-for="Rol" class="form-label fw-bold">Yetki (Rol)</label>
-                @* HATA ÇIKARAN C# KISMI KALDIRILDI *@
-                <select asp-for="Rol" class="form-select" asp-items="ViewBag.Roller" id="rolSecimi" onchange="rolDegisti()">
-                    <option value="">Bir Rol Seçiniz</option>
-                </select>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    @* 1. Senaryo: Admin ise hepsini seçebilir *@
+                    <select asp-for="Rol" class="form-select" asp-items="ViewBag.Roller" id="rolSecimi" onchange="rolDegisti()">
+                        <option value="">Bir Rol Seçiniz</option>
+                    </select>
+                }
+                else
+                {
+                    @* 2. Senaryo: Admin değilse (Satışçı) sadece Firma Yetkilisi ekleyebilir *@
+
+                    @* Kullanıcıya sadece bilgi gösteriyoruz (Disabled input sunucuya gitmez) *@
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="fas fa-lock"></i></span>
+                        <input type="text" class="form-control" value="Firma Yetkilisi" disabled readonly />
+                    </div>
+
+                    @* Sunucuya gidecek gerçek değer (JavaScript bunu okuyup firma kutusunu açacak) *@
+                    <input type="hidden" asp-for="Rol" value="FirmaKullanicisi" id="rolSecimi" />
+
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Yetkiniz gereği sadece Firma Yetkilisi ekleyebilirsiniz.
+                    </small>
+                }
+
                 <span asp-validation-for="Rol" class="text-danger small"></span>
             </div>
 

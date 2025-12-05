@@ -253,6 +253,7 @@ public class QuoteController : Controller
         }
 
         quote.Durum = QuoteStatus.YoneticiOnayBekliyor;
+        quote.ReviseReasonNote = null;
         await _context.SaveChangesAsync();
         TempData["BasariMesaji"] = "Teklif başarıyla yönetici onayına gönderildi.";
         return RedirectToAction("Index");
@@ -320,7 +321,7 @@ public class QuoteController : Controller
     }
     [HttpPost]
     [Authorize(Roles = "Admin")] // Sadece Admin rolündekiler onaylayabilir.
-    public async Task<IActionResult> Revize(int id)
+    public async Task<IActionResult> Revize(int id, string reason)
 
     {
         var quote = await _context.Quotes.FirstOrDefaultAsync(q => q.Id == id);
@@ -333,6 +334,7 @@ public class QuoteController : Controller
 
         }
         quote.Durum = QuoteStatus.RevizeGerekiyor;
+        quote.ReviseReasonNote = reason;
         await _context.SaveChangesAsync();
         TempData["HataMesaji"] = "Teklif revize edilmesi için personele geri gönderildi.";
         return RedirectToAction("Index");
@@ -341,33 +343,53 @@ public class QuoteController : Controller
     [Authorize(Roles = "Admin,SatisElemani")]
     public async Task<IActionResult> RevizeTamamlandi(QuoteModel model)
     {
-        //model binder'dan kaldırma bu sayede customer nesneleri view'a gitmiyor
         ModelState.Remove("Project");
         ModelState.Remove("Project.Customer");
 
         if (!ModelState.IsValid)
         {
-            TempData["HataMesaji"] = "Litfen teklif başlığını ve geçerlilik tarihi alanlarını kontrol edin.";
+            TempData["HataMesaji"] = "Lütfen teklif başlığını ve geçerlilik tarihi alanlarını kontrol edin.";
             return RedirectToAction("Details", new { id = model.Id });
         }
 
         var existingQuote = await _context.Quotes.FirstOrDefaultAsync(q => q.Id == model.Id);
         if (existingQuote == null) return NotFound();
 
+        // 1. Sadece bilgileri güncelle
         existingQuote.TeklifAdi = model.TeklifAdi;
         existingQuote.TeklifSonTarihi = model.TeklifSonTarihi;
         existingQuote.Vade = model.Vade;
         existingQuote.TeklifNotu = model.TeklifNotu;
 
-        existingQuote.Durum = QuoteStatus.YoneticiOnayBekliyor;
+        // 2. DİKKAT: Durumu ve Notu BURADA DEĞİŞTİRMİYORUZ! 
+        // Çünkü kullanıcı henüz ürünleri düzenlemedi. 
+        // Status 'RevizeGerekiyor' olarak kalmalı.
 
-        existingQuote.ReviseReasonNote = null; //düzenlemeyi yaptığımız için temizliyoruz içeriğini
         _context.Quotes.Update(existingQuote);
         await _context.SaveChangesAsync();
-        TempData["BasariMesaji"] = $"Teklif ({existingQuote.TeklifNo}) revize edilerek tekrar yönetici onayına gönderildi.";
 
-        // Teklif öğelerinin düzenlendiği sayfaya yönlendiriyoruz (QuoteItem/Index)
+        TempData["BasariMesaji"] = "Teklif başlık bilgileri güncellendi. Şimdi ürün kalemlerini revize edebilirsiniz.";
+
+        // 3. Ürün düzenleme ekranına yönlendir (Durum hala 'RevizeGerekiyor' olduğu için butonlar açık olacak)
         return RedirectToAction("Index", "QuoteItem", new { quoteId = model.Id });
+    }
+    [HttpGet]
+    [Authorize(Roles = "Admin,SatisElemani")]
+    public async Task<IActionResult>Edit(int id)
+    {
+        var quote = await _context.Quotes
+            .Include(q => q.Project)
+            .ThenInclude(p => p.Customer)
+            .FirstOrDefaultAsync(q => q.Id == id);
+        if (quote == null) { return NotFound(); }
+        // Sadece Taslak veya Revize durumundakiler düzenlenebilir
+        if (quote.Durum != QuoteStatus.Taslak && quote.Durum != QuoteStatus.RevizeGerekiyor)
+        {
+            TempData["HataMesaji"] = "Bu teklif şu an düzenlenemez.";
+            return RedirectToAction("Details", new { id = quote.Id });
+        }
+
+        return View(quote);
     }
     [HttpPost]
     [Authorize(Roles = "Admin")] // Sadece Admin rolündekiler reddeebilir.

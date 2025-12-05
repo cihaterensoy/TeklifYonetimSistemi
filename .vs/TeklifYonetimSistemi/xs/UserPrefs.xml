@@ -1,37 +1,45 @@
 ﻿<Properties StartupConfiguration="{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}|https">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Models/CustomerModel.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Controllers/HomeController.cs">
     <Files>
-      <File FileName="Controllers/MusteriController.cs" Line="19" Column="1" />
-      <File FileName="Views/Musteri/Details.cshtml" Line="74" Column="18" />
-      <File FileName="Controllers/KullaniciEkleController.cs" Line="54" Column="33" />
-      <File FileName="Models/KullaniciModel.cs" Line="21" Column="89" />
-      <File FileName="Models/CustomerModel.cs" Line="59" Column="70" />
-      <File FileName="Controllers/QuoteController.cs" Line="170" Column="67" />
-      <File FileName="Models/ViewModels/KullaniciEkleViewModel.cs" Line="17" Column="2" />
-      <File FileName="Program.cs" Line="27" Column="1" />
+      <File FileName="Views/Musteri/Details.cshtml" />
+      <File FileName="Controllers/KullaniciEkleController.cs" />
+      <File FileName="Models/KullaniciModel.cs" />
+      <File FileName="Models/CustomerModel.cs" />
+      <File FileName="Controllers/QuoteController.cs" />
+      <File FileName="Models/ViewModels/KullaniciEkleViewModel.cs" />
+      <File FileName="Program.cs" />
+      <File FileName="ServiceReference/Services/ELogoProxy.cs" />
+      <File FileName="Views/Musteri/ana.cshtml" />
+      <File FileName="Models/QuoteModel.cs" />
+      <File FileName="Views/Quote/Index.cshtml" />
+      <File FileName="Models/QuoteItemModel.cs" />
+      <File FileName="Models/ProductModel.cs" />
+      <File FileName="Models/ProjectModel.cs" />
+      <File FileName="Controllers/HomeController.cs" Line="166" Column="72" />
+      <File FileName="Views/Home/Index.cshtml" />
+      <File FileName="Models/ViewModels/TeklifDetayViewModel.cs" />
+      <File FileName="Views/Shared/_Layout.cshtml" />
+      <File FileName="Hubs/ChatHub.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="TeklifYonetimSistemi">
             <Node name="TeklifYonetimSistemi">
-              <Node name="Dependencies" expanded="True" />
-              <Node name="Contexts" expanded="True" />
-              <Node name="Hubs" expanded="True" />
-              <Node name="Models">
+              <Node name="Controllers" expanded="True">
+                <Node name="HomeController.cs" selected="True" />
+              </Node>
+              <Node name="Models" expanded="True">
                 <Node name="ViewModels" expanded="True" />
-                <Node name="CustomerModel.cs" selected="True" />
               </Node>
               <Node name="ServiceReference" expanded="True">
                 <Node name="Services" expanded="True" />
               </Node>
               <Node name="Services" expanded="True" />
-              <Node name="Views">
-                <Node name="Product" expanded="True" />
+              <Node name="Views" expanded="True">
+                <Node name="Musteri" expanded="True" />
               </Node>
-              <Node name="wwwroot" expanded="True">
-                <Node name="css" expanded="True" />
-              </Node>
+              <Node name="appsettings.json" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -39,10 +47,10 @@
     </Pads>
   </MonoDevelop.Ide.Workbench>
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.TeklifYonetimSistemi PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.TeklifYonetimSistemi PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

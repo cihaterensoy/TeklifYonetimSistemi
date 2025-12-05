@@ -1,0 +1,67 @@
+﻿@model TeklifYonetimSistemi.Models.QuoteModel
+
+@{
+    ViewData["Title"] = "Teklifi Düzenle";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Teklifi Düzenle / Revize Et</h4>
+        </div>
+        <div class="card-body">
+
+            @* Yönetici Revize Notu Varsa Göster *@
+            @if (!string.IsNullOrEmpty(Model.ReviseReasonNote) && Model.Durum == TeklifYonetimSistemi.Models.QuoteStatus.RevizeGerekiyor)
+            {
+                <div class="alert alert-danger border-start border-5 border-danger">
+                    <h5 class="alert-heading"><i class="bi bi-exclamation-triangle"></i> Revize Gerekçesi:</h5>
+                    <p class="mb-0">@Model.ReviseReasonNote</p>
+                </div>
+            }
+
+            @* Form, Controller'daki 'RevizeTamamlandi' metoduna gidecek *@
+            <form asp-action="RevizeTamamlandi" method="post">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="TeklifNo" />
+
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label asp-for="TeklifAdi" class="form-label fw-bold">Teklif Başlığı</label>
+                        <input asp-for="TeklifAdi" class="form-control" />
+                        <span asp-validation-for="TeklifAdi" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TeklifSonTarihi" class="form-label fw-bold">Geçerlilik Tarihi</label>
+                        <input asp-for="TeklifSonTarihi" type="date" class="form-control" />
+                        <span asp-validation-for="TeklifSonTarihi" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Vade" class="form-label fw-bold">Vade (Gün)</label>
+                        <input asp-for="Vade" type="number" class="form-control" />
+                        <span asp-validation-for="Vade" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="TeklifNotu" class="form-label fw-bold">Teklif Notu</label>
+                        <textarea asp-for="TeklifNotu" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="TeklifNotu" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">İptal</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg"></i> Değişiklikleri Kaydet ve İlerle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

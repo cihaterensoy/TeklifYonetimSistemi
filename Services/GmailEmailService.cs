@@ -130,8 +130,8 @@ namespace TeklifYonetimSistemi.Services
 {
     public class GmailEmailService : IEmailService
     {
-        private readonly string _fromEmail = "cihaterensoy@gmail.com";
-        private readonly string _password = "sagi urpr bnbo jjrq"; // 16 haneli uygulama şifresi
+        private readonly string _fromEmail = "";
+        private readonly string _password = ""; // 16 haneli uygulama şifresi
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {

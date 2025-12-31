@@ -1,5 +1,5 @@
 ﻿<Properties StartupConfiguration="{BBAB4B81-7757-4A40-A0FA-37FF9B7686AF}|https">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Controllers/HomeController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Services/GmailEmailService.cs">
     <Files>
       <File FileName="Views/Musteri/Details.cshtml" />
       <File FileName="Controllers/KullaniciEkleController.cs" />
@@ -15,27 +15,29 @@
       <File FileName="Models/QuoteItemModel.cs" />
       <File FileName="Models/ProductModel.cs" />
       <File FileName="Models/ProjectModel.cs" />
-      <File FileName="Controllers/HomeController.cs" Line="166" Column="72" />
+      <File FileName="Controllers/HomeController.cs" />
       <File FileName="Views/Home/Index.cshtml" />
       <File FileName="Models/ViewModels/TeklifDetayViewModel.cs" />
       <File FileName="Views/Shared/_Layout.cshtml" />
       <File FileName="Hubs/ChatHub.cs" />
+      <File FileName="Models/TeklifMesaj.cs" Line="1" Column="1" />
+      <File FileName="Services/GmailEmailService.cs" Line="133" Column="47" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="TeklifYonetimSistemi">
             <Node name="TeklifYonetimSistemi">
-              <Node name="Controllers" expanded="True">
-                <Node name="HomeController.cs" selected="True" />
-              </Node>
+              <Node name="Controllers" expanded="True" />
               <Node name="Models" expanded="True">
                 <Node name="ViewModels" expanded="True" />
               </Node>
               <Node name="ServiceReference" expanded="True">
                 <Node name="Services" expanded="True" />
               </Node>
-              <Node name="Services" expanded="True" />
+              <Node name="Services">
+                <Node name="GmailEmailService.cs" selected="True" />
+              </Node>
               <Node name="Views" expanded="True">
                 <Node name="Musteri" expanded="True" />
               </Node>
@@ -46,11 +48,11 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.ItemProperties.TeklifYonetimSistemi PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

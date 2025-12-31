@@ -140,10 +140,8 @@ public class ProjectController : Controller
             return NotFound();
         }
 
-        // --- DÜZELTME BAŞLANGICI ---
         // Edit sayfası açılırken Dropdown'ın dolu gelmesi için bu satır ŞART:
         ViewBag.Musteriler = new SelectList(await _context.Customers.ToListAsync(), "Id", "FirmaUnvani");
-        // --- DÜZELTME BİTİŞİ ---
 
         return View(project);
     }

@@ -1,5 +1,6 @@
 ﻿namespace TeklifYonetimSistemi.Data
 {
+
     // Data/UserRoles.cs
     public static class UserRoles
     {

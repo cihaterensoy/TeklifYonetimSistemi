@@ -40,7 +40,7 @@ public class CustomerModel
 
 
     // ==========================================================
-    // 2. YENİ EKLENECEK KISIM (Karşı Firma Yetkilileri)
+    //(Karşı Firma Yetkilileri)
     // ==========================================================
     /* Açıklama: KullaniciModel'in içine 'CustomerId' eklemiştik ya?
        İşte o ID'ye sahip olan kullanıcıları burada liste olarak göreceksin.
@@ -55,7 +55,7 @@ public class CustomerModel
     //Entity Framework’te bir sınıfın başka bir sınıfla ilişkisini temsil eden property’lere navigasyon özelliği denir.
     */
     [InverseProperty("Customer")]
-    [ValidateNever] // 👇 Kritik: Bu koleksiyonu serileştirme ve validasyondan çıkarır.
+    [ValidateNever] // Bu koleksiyonu serileştirme ve validasyondan çıkarır.
     public ICollection<KullaniciModel> FirmaYetkilileri { get; set; }
 
     //sınıf firmaModel

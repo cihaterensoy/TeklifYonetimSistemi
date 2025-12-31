@@ -121,6 +121,7 @@ public class HomeController : Controller
                 .OrderByDescending(x => x.Adet)//kücükten büyüğe sırala
                 .Take(5)//en çok satılan 5 kategori seçiliyor
                 .ToDictionaryAsync(x => x.Kategori, x => x.Adet);
+
             //onaylanmış tekliflerde hangi kategori üründen kaç tane satıldığını hesapla en çok satan  ilk 5 kategoriyi sırala ve sözlük olarak döndür
         }
 

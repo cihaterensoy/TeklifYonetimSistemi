@@ -12,7 +12,7 @@ public enum QuoteStatus
 
     [Display(Name ="Revize Gerekiyor")]
     RevizeGerekiyor = 2,
-    // Sen ONAYLADIN. Sadece bu aşamaya gelirse müşteri görebilir/mail gider.
+    // Sen ONAYLADIN. Sadece bu aşamaya gelirse müşteri görebilir/mail gider
     [Display(Name = "Müşteri Onayı Bekliyor")]
     MusteriOnayiBekliyor = 3,
 

@@ -180,10 +180,10 @@ public class QuoteController : Controller
         // var quotes= await _context.Quotes.Include(q => q.Project).ThenInclude(p => p.Customer).Include(qi=>qi).FirstOrDefaultAsync(qi => qi.Id == id);
         //var item = await _context.QuoteItems.Include(qi => qi.Quote).FirstOrDefaultAsync(qi => qi.Id == itemId);
         var quote = await _context.Quotes
-        .Include(q => q.QuoteItems)            // 1️⃣ Quote tablosuna bağlı tüm QuoteItems’leri getir
-        .Include(q => q.Project)               // 2️⃣ Quote tablosuna bağlı Project’i getir
-        .ThenInclude(p => p.Customer)          // 3️⃣ O Project’in bağlı olduğu Customer’ı da getir
-        .FirstOrDefaultAsync(qi => qi.Id == id); // 4️⃣ Quote.Id’si parametre ile eşleşen ilk kaydı al
+        .Include(q => q.QuoteItems)            // Quote tablosuna bağlı tüm QuoteItems’leri getir
+        .Include(q => q.Project)               //Quote tablosuna bağlı Project’i getir
+        .ThenInclude(p => p.Customer)          //O Project’in bağlı olduğu Customer’ı da getir
+        .FirstOrDefaultAsync(qi => qi.Id == id); //Quote.Id’si parametre ile eşleşen ilk kaydı al
         //yani includeların hepsi Quotes tablosunu bağlıyor. thenInclude ise bir öncekini bağlıyor
 
         //Veritabanına git, ID'si benim verdiğim id olan Teklifi bul.

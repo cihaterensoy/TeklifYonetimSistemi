@@ -187,7 +187,8 @@ namespace TeklifYonetimSistemi.Services
             }).GeneratePdf(stream);
             //MemoryStream → PDF'i bellekten byte array olarak elde ederiz, böylece tarayıcıya gönderebiliriz.
             //return stream.ToArray() → Controller'a PDF'i byte[] olarak döndürür.
-            return stream.ToArray(); // PDF byte array olarak döner
+            return stream.ToArray();
+            // PDF byte array olarak döner
         }
     }
 }

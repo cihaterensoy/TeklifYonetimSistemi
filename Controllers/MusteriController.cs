@@ -56,6 +56,8 @@ public class MusteriController : Controller
         }
         return View(musteri);
         //return View(musteri) → Bulunan müşteri bilgilerini Details.cshtml view’ine gönderir.
+
+
     }
     */
     //bir firmaya bağlı birden fazla firma yetkilisi eklemek için değişiklik yapıyorum

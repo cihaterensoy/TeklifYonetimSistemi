@@ -218,6 +218,7 @@ public class QuoteItemController : Controller
             // Toplam KDV (Sadece KDV Tutarlarının Toplamı)
             teklif.ToplamKDV = satirlar.Sum(x => x.KDVTutari);
 
+
             // Genel Toplam
             teklif.GenelToplam = satirlar.Sum(x => x.SatirGenelToplam);
 

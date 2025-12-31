@@ -49,7 +49,7 @@ namespace TeklifYonetimSistemi.Models
         [Column(TypeName = "decimal(18,2)")]//decimalin kaç basamak tutacağını belirler 18 basamaklı basamaklı virgülden sonraki kuruştur
         public decimal BirimMaliyet{ get; set; }
 
-        // --- 2. SATIŞ VE KÂR ---
+        // --- SATIŞ VE KÂR ---
 
         // Maliyetin üzerine koyduğumuz kâr
         [Display(Name = "Bayi Kârı (%)")]

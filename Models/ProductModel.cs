@@ -59,11 +59,7 @@ public class ProductModel
     [StringLength(5)]
     public string ParaBirimi { get; set; } = "TL";
 
-
-
-
-
-    //buradan sonrası tamamıyla yapay zeka destekli bir şekilde yazıldı
+    
 }
 
 

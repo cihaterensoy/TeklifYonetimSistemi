@@ -20,6 +20,7 @@ namespace TeklifYonetimSistemi.Models
 
 
 
+
         //public ProjectStatus Durum { get; set; } = ProjectStatus.Yeni; //projenin durumunu gireceğiz devam ediyor,bitti,iptal edildi
         [Display(Name = "Proje Aktif mi?")]
         public bool ProjeAktifMi { get; set; } = true;

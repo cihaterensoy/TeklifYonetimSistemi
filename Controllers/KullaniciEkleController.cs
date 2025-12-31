@@ -129,6 +129,7 @@ public class KullaniciEkleController:Controller
         ViewBag.Firmalar = new SelectList(firmalarListesi, "Id", "FirmaUnvani");
 
         // Modeli geri gönder ki kullanıcının yazdıkları silinmesin
+
         return View(model);
     }
     

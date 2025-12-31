@@ -9,7 +9,7 @@ public class RegisterController: Controller
     public RegisterController(UserManager<IdentityUser>userManager)
     {
         _userManager = userManager;
-        //ASP.Net Core'un Dependency Injection sistemi Sayesinde Usermanager servisini controller içine otomatik olarak enjekte eder
+       //ASP.Net Core'un Dependency Injection sistemi Sayesinde Usermanager servisini controller içine otomatik olarak enjekte eder
     }
     [HttpGet]
     public IActionResult Register()

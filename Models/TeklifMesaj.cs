@@ -18,7 +18,7 @@ public class TeklifMesaj
     public string MesajMetni { get; set; }
     public DateTime GonderilmeTarihi { get; set; } = DateTime.UtcNow;
 
-    // İndeksleme: Performans için kritik!
+    // Performans için kritik!
     public bool OkunduMu { get; set; } = false;
 
 }

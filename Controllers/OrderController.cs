@@ -16,7 +16,6 @@ public class OrderController : Controller
     private readonly VeriTabaniDB _context;
     private readonly UserManager<KullaniciModel> _userManager;//Identity üzerinden kullanıcı yönetimi sağlıyor
     //_context -> entity frameworkun veri tabanına erişimi
-    //
 
     public OrderController(VeriTabaniDB context,UserManager<KullaniciModel> userManager)
     {

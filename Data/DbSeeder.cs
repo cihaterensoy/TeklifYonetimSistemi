@@ -8,7 +8,7 @@ namespace TeklifYonetimSistemi.Data
     {
         public static async Task SeedRolesAndAdminAsync(IServiceProvider service)
         {
-            // 👇 BURASI ÇOK ÖNEMLİ: Senin modelin IdentityUser<int> olduğu için burası da <int> olmalı
+            
             var userManager = service.GetService<UserManager<KullaniciModel>>();
             var roleManager = service.GetService<RoleManager<IdentityRole<int>>>();
 
@@ -47,7 +47,7 @@ namespace TeklifYonetimSistemi.Data
         {
             if (!await roleManager.RoleExistsAsync(roleName))
             {
-                // 👇 DİKKAT: Rol de int tabanlı oluşturulmalı
+                
                 await roleManager.CreateAsync(new IdentityRole<int>(roleName));
             }
         }

@@ -12,7 +12,8 @@ public class Kur
         var usd = doc.Descendants("Currency")//XML currency etiketini alıyor. yani isimlerin yazdığı yer
                         .First(c => c.Attribute("Kod").Value == "USD")
                         .Element("ForexSelling").Value;
-        return decimal.Parse(usd.Replace(".", ",")); //xmldeki nokta ile ayrılmış ondalıkları virgüle çevirdik
+        return decimal.Parse(usd.Replace(".", ","));
+        //xmldeki nokta ile ayrılmış ondalıkları virgüle çevirdik
     }
 
     public async Task<decimal> GetEurRateAsync()

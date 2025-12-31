@@ -63,45 +63,6 @@ namespace TeklifYonetimSistemi.Hubs
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, teklifId);
         }
-        /*
-        //arama bildirimi gönderme
-        //ara butonuna basıldığında bu metot çalışır
-        //hedef temsilciye biri seni arıyor sinyali gönderir
-
-        public async Task YetkiliyiAra(string hedefUserId)
-        {
-            //arayan kişinin ismini alıyoruz
-            string arayanIsim = Context.User.Identity?.Name ?? "Bilinmeyen Müşteri";
-
-            //arayan kişinin kendi id'sini gönderiyoruz, karşı taraf kimi arayacağını bilsin
-            string arayanId = Context.UserIdentifier;
-
-
-            // Hedefteki kullanıcıya (Temsilciye) "AramaGeliyor" sinyali gönder.
-            // Bu sinyal frontend'de (JS) bir Modal/Popup açılmasını tetikler.
-            await Clients.User(hedefUserId).SendAsync("AramaGeliyor", arayanIsim, arayanId);
-        }
-
-        //webrtc sinyalleşme
-        //webrtc bağlantısı kurulurken tarayıcların birbirine göndermesi gereken
-        //offer answerr ve ice candiate bu metot taşır
-
-        public async Task WebRTCSinyalGonder(String hedefUserId,string sinyalVerisi)
-        {
-            // Gönderen kişinin ID'sini al
-            string gonderenId = Context.UserIdentifier;
-
-            //sinyali ve kimden geldiğini direkt hedef kişiye ilet
-            //// Frontend tarafında (JS) bu sinyal alınıp WebRTC motoruna işlenir.
-            await Clients.User(hedefUserId).SendAsync("WebRTCSinyalAlindi", gonderenId, sinyalVerisi);
-        }
-        // ... Diğer metotların altına ekle ...
-
-        public async Task AramayiSonlandir(string hedefUserId)
-        {
-            // Hedef kullanıcıya "Görüşme Bitti" sinyali gönder
-            await Clients.User(hedefUserId).SendAsync("GorusmeSonlandirildi");
-        }
-        */
+        
     }
 }

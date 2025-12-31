@@ -13,7 +13,7 @@ public class QuoteModel
 
     [Display(Name = "Teklif No")]
     public string TeklifNo { get; set; } // Örn: T-2025-0105. Controller'da üretilecek.
-                                         // -----------------------------
+                                         
 
     [Required(ErrorMessage = "Teklif adı boş bırakılamaz!")]
     [Display(Name = "Teklif Başlığı")]

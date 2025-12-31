@@ -45,8 +45,7 @@ public class LoginController : Controller
             return RedirectToAction("Index", "Home");
         }
         ModelState.AddModelError("", "Email veya şifre yanlış!");
-        return View(model);
-        //giriş başarılı olmazsa buraya yönlendiriyor
+        return View(model);//giriş başarılı olmazsa buraya yönlendiriyor
     }
     [HttpPost]
     [ValidateAntiForgeryToken]

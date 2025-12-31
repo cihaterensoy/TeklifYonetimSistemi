@@ -115,7 +115,7 @@ public class ProductController:Controller
         //edit'in gönderdiği veripaketi modeldir yani productModel
         if (!ModelState.IsValid)
         {
-            // DÜZELTME 3: Hata durumunda sayfa geri dönerken Dropdownlar BOŞ dönmemeli!
+            //Hata durumunda sayfa geri dönerken Dropdownlar BOŞ dönmemeli!
             ViewBag.Kategoriler = new SelectList(new List<string>() { "Donanım", "Yazılım", "Hizmet", "Altyapı" });
             ViewBag.Birimler = new SelectList(new List<string>() { "Adet", "Saat", "Gün", "Ay", "Yıl", "Metre", "Lisans", "Kutu" });
             return View(model);

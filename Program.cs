@@ -15,14 +15,12 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddControllersWithViews();
 
 // MVC ve Razor Pages Servisleri
-// 👇 MEVCUT KODU BU ŞEKİLDE GÜNCELLEYİN
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
         // JSON Serileştiriciye döngüsel referansları görmezden gel talimatı verilir.
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
-// 👆 BU KISIM ÇÖZÜMÜ SAĞLAR
 
 
 builder.Services.AddRazorPages();

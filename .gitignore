@@ -37,3 +37,4 @@ wwwroot/css
 
 # Diğer
 Thumbs.db
+Migrations/

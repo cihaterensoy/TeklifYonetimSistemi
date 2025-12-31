@@ -5,7 +5,6 @@ using TeklifYonetimSistemi.Models;
 
 namespace TeklifYonetimSistemi.Contexts
 {
-    // DÜZELTME BURADA:
     // Standart IdentityDbContext yerine, tipleri açıkça belirttiğimiz generic yapıyı kullanıyoruz.
     // Sırasıyla: <KullanıcıSınıfı, RolSınıfı, AnahtarTipi>
     public class VeriTabaniDB : IdentityDbContext<KullaniciModel, IdentityRole<int>, int>
